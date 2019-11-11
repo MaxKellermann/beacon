@@ -74,7 +74,7 @@ inc = include_directories(
   '.',
 )
 
-executable('becaon-receiver',
+executable('beacon-receiver',
   'src/receiver/Main.cxx',
   'src/receiver/Receiver.cxx',
   'src/receiver/Assemble.cxx',
@@ -90,3 +90,7 @@ executable('becaon-receiver',
 )
 
 subdir('test')
+
+if libsystemd.found()
+  subdir('systemd')
+endif
