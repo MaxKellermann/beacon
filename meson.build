@@ -61,7 +61,9 @@ conf = configuration_data()
 
 thread_dep = dependency('threads')
 boost_dep = dependency('boost', version: '>= 1.67')
-libsystemd = dependency('libsystemd')
+
+libsystemd = dependency('libsystemd', required: false)
+conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 
 configure_file(output: 'config.h', configuration: conf)
 

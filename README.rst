@@ -19,6 +19,10 @@ You need:
 - `Boost <http://www.boost.org/>`__
 - `Meson 0.47 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
 
+Optional:
+
+- `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`__
+
 Run ``meson``::
 
  meson . output
