@@ -65,7 +65,7 @@ inc = include_directories(
   'src',
 )
 
-executable('beaon-receiver',
+executable('becaon-receiver',
   'src/receiver/Main.cxx',
   'src/receiver/Receiver.cxx',
   'src/receiver/Assemble.cxx',
