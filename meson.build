@@ -11,7 +11,7 @@ common_flags = [
   '-D_GNU_SOURCE',
 
   # no header bloat for the iostream library we don't use
-  '-DBOOST_NO_IOSTREAM',
+  #'-DBOOST_NO_IOSTREAM',
 
   # avoid the runtime dependency on libboost_system
   '-DBOOST_ERROR_CODE_HEADER_ONLY',
@@ -74,6 +74,8 @@ inc = include_directories(
   '.',
 )
 
+subdir('src/pg')
+
 executable('beacon-receiver',
   'src/receiver/Main.cxx',
   'src/receiver/Receiver.cxx',
@@ -84,6 +86,7 @@ executable('beacon-receiver',
   dependencies: [
     thread_dep,
     boost_dep,
+    pg_dep,
     libsystemd,
   ],
   install: true,

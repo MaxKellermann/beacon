@@ -17,6 +17,7 @@ You need:
 
 - a C++17 compliant compiler (e.g. gcc or clang)
 - `Boost <http://www.boost.org/>`__
+- `PostgreSQL <https://www.postgresql.org/>`__ and `PostGIS <https://postgis.net/>`__
 - `Meson 0.47 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
 
 Optional:

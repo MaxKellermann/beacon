@@ -31,6 +31,7 @@
 #include "Protocol.hxx"
 #include "Receiver.hxx"
 #include "geo/GeoPoint.hxx"
+#include "pg/Connection.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 
@@ -41,6 +42,10 @@
 #include <boost/asio/io_context.hpp>
 
 #include <forward_list>
+#include <sstream>
+
+#include <inttypes.h>
+#include <stdio.h>
 
 class Instance;
 
@@ -61,11 +66,20 @@ public:
 class Instance {
 	boost::asio::io_context io_context;
 
+	Pg::Connection db;
+
 	std::forward_list<MyReceiver> receivers;
 
 public:
+	explicit Instance(const char *_db)
+		:db(_db) {}
+
 	auto &get_io_context() noexcept {
 		return io_context;
+	}
+
+	auto &GetDatabase() noexcept {
+		return db;
 	}
 
 	void AddReceiver(boost::asio::ip::udp::endpoint endpoint);
@@ -82,11 +96,49 @@ MyReceiver::MyReceiver(Instance &_instance,
 {
 }
 
+static std::string
+ToStringWithoutPort(boost::asio::ip::udp::endpoint endpoint) noexcept
+{
+	std::stringstream buffer;
+	buffer << endpoint;
+	auto value = buffer.str();
+	auto colon = value.find(':');
+	if (colon != value.npos)
+		// TODO: IPv6?
+		value.erase(colon);
+	return value;
+}
+
 void
-MyReceiver::OnFix(const Client &, GeoPoint location) noexcept
+MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 {
 	fprintf(stderr, "fix %f %f\n",
 		location.latitude.Degrees(), location.longitude.Degrees());
+
+	auto &db = instance.GetDatabase();
+
+	char key_buffer[32];
+	snprintf(key_buffer, sizeof(key_buffer), "%" PRIu64, client.key);
+	const char *key_s = key_buffer;
+
+	char location_buffer[128];
+	const char *location_s = nullptr;
+	if (location.IsValid()) {
+		snprintf(location_buffer, sizeof(location_buffer), "POINT(%f %f)",
+			 location.longitude.Degrees(),
+			 location.latitude.Degrees());
+		location_s = location_buffer;
+	}
+
+	try {
+		db.ExecuteParams("INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))",
+				 key_s,
+				 ToStringWithoutPort(client.endpoint).c_str(),
+				 location_s);
+	} catch (...) {
+		PrintException(std::current_exception());
+		// TODO what now - reconnect or abort?
+	}
 }
 
 void
@@ -98,7 +150,9 @@ Instance::AddReceiver(boost::asio::ip::udp::endpoint endpoint)
 int
 main(int, char **) noexcept
 try {
-	Instance instance;
+	const char *db = "dbname=beacon"; // TODO make configurable
+
+	Instance instance(db);
 	instance.AddReceiver(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),
 							    Beacon::Protocol::DEFAULT_PORT));
 
