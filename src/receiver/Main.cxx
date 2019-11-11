@@ -32,6 +32,11 @@
 #include "Receiver.hxx"
 #include "geo/GeoPoint.hxx"
 #include "util/PrintException.hxx"
+#include "config.h"
+
+#ifdef HAVE_LIBSYSTEMD
+#include <systemd/sd-daemon.h>
+#endif
 
 #include <boost/asio/io_context.hpp>
 
@@ -96,6 +101,11 @@ try {
 	Instance instance;
 	instance.AddReceiver(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),
 							    Beacon::Protocol::DEFAULT_PORT));
+
+#ifdef HAVE_LIBSYSTEMD
+	/* tell systemd we're ready */
+	sd_notify(0, "READY=1");
+#endif
 
 	instance.Run();
 
