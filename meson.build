@@ -57,12 +57,19 @@ test_cxxflags = test_common_flags + [
 add_global_arguments(common_flags, language: 'cpp')
 add_global_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
 
+conf = configuration_data()
+
 thread_dep = dependency('threads')
 boost_dep = dependency('boost', version: '>= 1.67')
 libsystemd = dependency('libsystemd')
 
+configure_file(output: 'config.h', configuration: conf)
+
 inc = include_directories(
   'src',
+
+  # for the generated config.h
+  '.',
 )
 
 executable('becaon-receiver',
