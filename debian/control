@@ -1,0 +1,22 @@
+Source: beacon
+Section: net
+Priority: optional
+Maintainer: Max Kellermann <max.kellermann@gmail.com>
+Build-Depends: debhelper (>= 12~),
+ meson (>= 0.47),
+ g++ (>= 4:6),
+ libboost-dev (>= 1.67),
+ libsystemd-dev
+Standards-Version: 4.0.0
+Vcs-Browser: https://github.com/MaxKellermann/beacon
+Vcs-Git: git://github.com/MaxKellermann/beacon
+
+Package: beacon-receiver
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, systemd-sysv, adduser
+Suggests: postgresql, postgresql-postgis, postgresql-postgis-scripts
+Description: Beacon receiver daemon
+ Beacon is a light-weight UDP-based protocol for sharing GPS fixes.
+ It was designed to locate friends during bike rides.
+ .
+ This server contains the receiver daemon.

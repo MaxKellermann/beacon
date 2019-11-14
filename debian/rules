@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+
+%:
+	dh $@
+
+override_dh_installsystemd:
+	if test -f debian/beacon-receiver/usr/lib/systemd/system/beacon-receiver.service; then mkdir -p debian/beacon-receiver/lib/systemd/system; mv debian/beacon-receiver/usr/lib/systemd/system/beacon-receiver.service debian/beacon-receiver/lib/systemd/system/; fi
+	dh_installsystemd
