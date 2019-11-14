@@ -1,0 +1,14 @@
+#! /bin/sh -e
+
+if [ "$1" = "configure" ]; then
+    if ! getent passwd beacon-gpx >/dev/null; then
+	adduser --quiet \
+            --system --ingroup nogroup \
+            --no-create-home \
+            --home /var/lib/beacon \
+            --shell /usr/sbin/nologin \
+            beacon-gpx
+    fi
+fi
+
+#DEBHELPER#

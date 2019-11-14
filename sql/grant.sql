@@ -9,3 +9,6 @@ CREATE ROLE "beacon-receiver" WITH LOGIN;
 
 GRANT INSERT ON fixes TO "beacon-receiver";
 GRANT UPDATE, SELECT ON fixes_id_seq TO "beacon-receiver";
+
+CREATE ROLE "beacon-gpx" WITH LOGIN;
+GRANT SELECT ON fixes TO "beacon-gpx";

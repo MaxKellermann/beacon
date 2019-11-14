@@ -1,0 +1,2 @@
+usr/bin/beacon-receiver
+usr/lib/systemd/system/beacon-receiver.service lib/systemd/system

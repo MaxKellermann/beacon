@@ -65,6 +65,8 @@ boost_dep = dependency('boost', version: '>= 1.67')
 libsystemd = dependency('libsystemd', required: false)
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 
+libfcgi = compiler.find_library('fcgi')
+
 configure_file(output: 'config.h', configuration: conf)
 
 inc = include_directories(
@@ -86,6 +88,18 @@ executable('beacon-receiver',
   dependencies: [
     thread_dep,
     boost_dep,
+    pg_dep,
+    libsystemd,
+  ],
+  install: true,
+)
+
+executable('beacon-gpx',
+  'src/web/GetGPX.cxx',
+  'src/util/PrintException.cxx',
+  include_directories: inc,
+  dependencies: [
+    libfcgi,
     pg_dep,
     libsystemd,
   ],

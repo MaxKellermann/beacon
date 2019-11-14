@@ -1,0 +1,9 @@
+[Unit]
+Description=Beacon GPX converter
+Before=nginx.service
+
+[Socket]
+ListenStream=%t/beacon/gpx.socket
+
+[Install]
+WantedBy=nginx.service

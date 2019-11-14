@@ -1,0 +1,20 @@
+[Unit]
+Description=Beacon GPX converter
+
+[Service]
+Type=notify
+User=beacon-gpx
+ExecStart=/usr/bin/beacon-gpx
+
+# resource limits
+MemoryMax=64M
+TasksMax=256
+
+# paranoid security settings
+NoNewPrivileges=yes
+ProtectSystem=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
