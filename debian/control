@@ -19,4 +19,4 @@ Description: Beacon receiver daemon
  Beacon is a light-weight UDP-based protocol for sharing GPS fixes.
  It was designed to locate friends during bike rides.
  .
- This server contains the receiver daemon.
+ This package contains the receiver daemon.
