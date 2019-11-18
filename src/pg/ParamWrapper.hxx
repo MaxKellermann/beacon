@@ -192,6 +192,28 @@ struct ParamWrapper<unsigned> {
 };
 
 template<>
+struct ParamWrapper<uint64_t> {
+	char buffer[32];
+
+	ParamWrapper(uint64_t i) noexcept {
+		sprintf(buffer, "%" PRIu64, i);
+	}
+
+	const char *GetValue() const noexcept {
+		return buffer;
+	}
+
+	static constexpr bool IsBinary() noexcept {
+		return false;
+	}
+
+	size_t GetSize() const noexcept {
+		/* ignored for text columns */
+		return 0;
+	}
+};
+
+template<>
 struct ParamWrapper<bool> {
 	const char *value;
 
