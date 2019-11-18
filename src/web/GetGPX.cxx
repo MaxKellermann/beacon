@@ -40,9 +40,20 @@
 #include <fastcgi.h>
 #include <fcgiapp.h>
 
+#include <string>
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+static void
+NotFound(FCGX_Stream *out) noexcept
+{
+	FCGX_PutS("Status: 404 Not Found\n"
+		  "Content-Type: text/plain\n"
+		  "\n"
+		  "Not found\n", out);
+}
 
 static void
 Run(Pg::Connection &db,
@@ -53,10 +64,22 @@ Run(Pg::Connection &db,
 	(void)err;
 	(void)envp;
 
-	const char *key_s = "42";
+	const char *const path_info = FCGX_GetParam("PATH_INFO", envp);
+	if (path_info == nullptr) {
+		NotFound(out);
+		return;
+	}
 
-	auto result = db.ExecuteParams("SELECT ST_AsText(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
-				       key_s);
+	char *endptr;
+	const uint64_t key = strtoull(path_info, &endptr, 10);
+	if (endptr == path_info || (*endptr != 0 && !StringIsEqual(endptr, ".gpx"))) {
+		NotFound(out);
+		return;
+	}
+
+	auto result = db.ExecuteParams(false,
+				       "SELECT ST_AsText(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
+				       key);
 	FCGX_PutS("Content-Type: application/gpx+xml\n"
 		  "\n"
 		  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
@@ -71,7 +94,6 @@ Run(Pg::Connection &db,
 		if (p == nullptr)
 			continue;
 
-		char *endptr;
 		double longitude = strtod(p, &endptr);
 		if (endptr == p || *endptr != ' ')
 			continue;
