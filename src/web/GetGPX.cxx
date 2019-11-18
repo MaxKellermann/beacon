@@ -80,6 +80,11 @@ Run(Pg::Connection &db,
 	auto result = db.ExecuteParams(false,
 				       "SELECT ST_AsText(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
 				       key);
+	if (result.IsEmpty()) {
+		NotFound(out);
+		return;
+	}
+
 	FCGX_PutS("Content-Type: application/gpx+xml\n"
 		  "\n"
 		  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
