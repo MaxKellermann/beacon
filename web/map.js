@@ -53,6 +53,9 @@ function onAppend(lineString) {
   // center the map on the current location
   let currentCoordinate = lineString.getLastCoordinate();
   map.getView().setCenter(currentCoordinate);
+
+  let date = new Date(currentCoordinate[2] * 1000);
+  document.getElementById('last_time').innerText = date.toUTCString();
 }
 
 vectorLayer.getSource().once('addfeature', function(e) {
