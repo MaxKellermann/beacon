@@ -80,6 +80,7 @@ SelectFixes(Pg::Connection &db, const uint64_t key, const std::string &since)
 					"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
 					" FROM fixes"
 					" WHERE key=$1 AND time>=$2"
+					" AND time > now() - '4 hours'::interval"
 					" ORDER BY time LIMIT 16384",
 					key, since.c_str());
 	return db.ExecuteParams(false,
@@ -87,6 +88,7 @@ SelectFixes(Pg::Connection &db, const uint64_t key, const std::string &since)
 				"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
 				" FROM fixes"
 				" WHERE key=$1"
+				" AND time > now() - '4 hours'::interval"
 				" ORDER BY time LIMIT 16384",
 				key);
 }
