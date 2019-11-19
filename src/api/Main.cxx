@@ -31,6 +31,7 @@
 #include "GetGPX.hxx"
 #include "pg/Connection.hxx"
 #include "util/PrintException.hxx"
+#include "util/StringCompare.hxx"
 #include "config.h"
 
 #ifdef HAVE_LIBSYSTEMD
@@ -68,7 +69,10 @@ Run(Pg::Connection &db,
 		return;
 	}
 
-	return HandleGPX(db, path_info, out, envp);
+	if (auto gpx = StringAfterPrefix(path_info, "gpx/"))
+		HandleGPX(db, gpx, out, envp);
+	else
+		NotFound(out);
 }
 
 int

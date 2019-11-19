@@ -23,7 +23,7 @@ var locationStyle = new ol.style.Style({
 
 var vectorLayer = new ol.layer.Vector({
   source: new ol.source.Vector({
-    url: '/api/' + id + '.gpx',
+    url: '/api/gpx/' + id + '.gpx',
     format: new ol.format.GPX(),
   }),
 
