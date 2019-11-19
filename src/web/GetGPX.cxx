@@ -78,7 +78,7 @@ Run(Pg::Connection &db,
 	}
 
 	auto result = db.ExecuteParams(false,
-				       "SELECT ST_AsText(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
+				       "SELECT ST_X(location),ST_Y(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
 				       key);
 	if (result.IsEmpty()) {
 		NotFound(out);
@@ -94,22 +94,11 @@ Run(Pg::Connection &db,
 		  out);
 
 	for (const auto &row : result) {
-		const char *wkt = row.GetValue(0);
-		const char *p = StringAfterPrefix(wkt, "POINT(");
-		if (p == nullptr)
-			continue;
-
-		double longitude = strtod(p, &endptr);
-		if (endptr == p || *endptr != ' ')
-			continue;
-
-		p = endptr + 1;
-		double latitude = strtod(p, &endptr);
-		if (endptr == p || *endptr != ')')
-			continue;
+		const auto longitude = row.GetValue(0);
+		const auto latitude = row.GetValue(1);
 
 		FCGX_FPrintF(out,
-			     "<trkpt lat=\"%f\" lon=\"%f\"></trkpt>\n",
+			     "<trkpt lat=\"%s\" lon=\"%s\"></trkpt>\n",
 			     latitude, longitude);
 
 	}
