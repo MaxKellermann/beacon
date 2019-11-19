@@ -29,6 +29,7 @@
  */
 
 #include "GetGPX.hxx"
+#include "Response.hxx"
 #include "pg/Connection.hxx"
 #include "util/StringCompare.hxx"
 #include "util/UriQueryParser.hxx"
@@ -36,15 +37,6 @@
 #include <fcgiapp.h>
 
 #include <string>
-
-static void
-NotFound(FCGX_Stream *out) noexcept
-{
-	FCGX_PutS("Status: 404 Not Found\n"
-		  "Content-Type: text/plain\n"
-		  "\n"
-		  "Not found\n", out);
-}
 
 static std::string
 GetQueryParameter(FCGX_ParamArray envp, StringView name) noexcept

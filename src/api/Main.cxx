@@ -28,6 +28,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "Response.hxx"
 #include "GetGPX.hxx"
 #include "pg/Connection.hxx"
 #include "util/PrintException.hxx"
@@ -44,15 +45,6 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-static void
-NotFound(FCGX_Stream *out) noexcept
-{
-	FCGX_PutS("Status: 404 Not Found\n"
-		  "Content-Type: text/plain\n"
-		  "\n"
-		  "Not found\n", out);
-}
 
 static void
 Run(Pg::Connection &db,
