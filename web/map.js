@@ -49,6 +49,28 @@ var map = new ol.Map({
   })
 });
 
+/**
+ * Send a GET request and pass the response body to the caller.
+ */
+function get(url, callback) {
+  let client = new XMLHttpRequest();
+  client.open('GET', url);
+  client.onload = function() {
+    callback(client.responseText);
+  };
+  client.send();
+}
+
+/**
+ * Send a GET request and pass the parsed and projected response body as a
+ * "feature" object to the callback.
+ */
+function getFeatures(url, format, callback) {
+  get(url, function(data) {
+    callback(format.readFeatures(data, {featureProjection: map.getView().getProjection()}));
+  });
+}
+
 function onAppend(lineString) {
   // center the map on the current location
   let currentCoordinate = lineString.getLastCoordinate();
@@ -58,6 +80,44 @@ function onAppend(lineString) {
   document.getElementById('last_time').innerText = date.toUTCString();
 }
 
+function appendCoordinates(src) {
+  let feature = vectorLayer.getSource().getFeatures()[0]
+  let dest = feature.getGeometry();
+  let last_time = dest.getLastCoordinate()[2];
+
+  let coordinates = dest.getCoordinates();
+  let changed = false;
+  src.forEach(function(c) {
+    if (c[2] > last_time) {
+      coordinates[0].push(c);
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    dest.setCoordinates(coordinates);
+    onAppend(feature.getGeometry());
+  }
+}
+
+function updateVectorLayer() {
+  let feature = vectorLayer.getSource().getFeatures()[0]
+  let currentCoordinate = feature.getGeometry().getLastCoordinate();
+  let date = new Date(currentCoordinate[2] * 1000);
+  let url = vectorLayer.getSource().getUrl() + "?since=" + date.toJSON();
+
+  getFeatures(url, vectorLayer.getSource().getFormat(), function(newFeatures) {
+    appendCoordinates(newFeatures[0].getGeometry().getLineString().getCoordinates())
+    document.getElementById('last_update').innerText = new Date().toUTCString();
+    scheduleUpdate();
+  });
+}
+
+function scheduleUpdate() {
+  setTimeout(updateVectorLayer, 5000);
+}
+
 vectorLayer.getSource().once('addfeature', function(e) {
   onAppend(e.feature.getGeometry());
+  scheduleUpdate();
 });
