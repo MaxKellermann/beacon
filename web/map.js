@@ -49,8 +49,12 @@ var map = new ol.Map({
   })
 });
 
-vectorLayer.getSource().once('addfeature', function(e) {
+function onAppend(lineString) {
   // center the map on the current location
-  let currentCoordinate = e.feature.getGeometry().getLastCoordinate();
+  let currentCoordinate = lineString.getLastCoordinate();
   map.getView().setCenter(currentCoordinate);
+}
+
+vectorLayer.getSource().once('addfeature', function(e) {
+  onAppend(e.feature.getGeometry());
 });
