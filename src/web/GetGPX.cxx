@@ -55,6 +55,18 @@ NotFound(FCGX_Stream *out) noexcept
 		  "Not found\n", out);
 }
 
+static auto
+SelectFixes(Pg::Connection &db, const uint64_t key)
+{
+	return db.ExecuteParams(false,
+				"SELECT ST_X(location),ST_Y(location),"
+				"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
+				" FROM fixes"
+				" WHERE key=$1"
+				" ORDER BY time LIMIT 16384",
+				key);
+}
+
 static void
 Run(Pg::Connection &db,
     FCGX_Stream *in, FCGX_Stream *out, FCGX_Stream *err,
@@ -77,13 +89,7 @@ Run(Pg::Connection &db,
 		return;
 	}
 
-	auto result = db.ExecuteParams(false,
-				       "SELECT ST_X(location),ST_Y(location),"
-				       "to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
-				       " FROM fixes"
-				       " WHERE key=$1"
-				       " ORDER BY time LIMIT 16384",
-				       key);
+	auto result = SelectFixes(db, key);
 	if (result.IsEmpty()) {
 		NotFound(out);
 		return;
