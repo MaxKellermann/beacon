@@ -26,9 +26,9 @@ var vectorLayer = new ol.layer.Vector({
 })
 
 vectorLayer.on('postrender', function(evt) {
-  var currentCoordinate = vectorLayer.getSource().getFeatures()[0].getGeometry().getLastCoordinate();
-  var point = new ol.geom.Point(currentCoordinate);
-  var vectorContext = ol.render.getVectorContext(evt);
+  let currentCoordinate = vectorLayer.getSource().getFeatures()[0].getGeometry().getLastCoordinate();
+  let point = new ol.geom.Point(currentCoordinate);
+  let vectorContext = ol.render.getVectorContext(evt);
   vectorContext.setStyle(locationStyle);
   vectorContext.drawGeometry(point);
 });
@@ -51,6 +51,6 @@ var map = new ol.Map({
 
 vectorLayer.getSource().once('addfeature', function(e) {
   // center the map on the current location
-  var currentCoordinate = e.feature.getGeometry().getLastCoordinate();
+  let currentCoordinate = e.feature.getGeometry().getLastCoordinate();
   map.getView().setCenter(currentCoordinate);
 });
