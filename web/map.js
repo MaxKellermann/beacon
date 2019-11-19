@@ -1,3 +1,8 @@
+var fragment_params = new URLSearchParams(window.location.hash.substr(1));
+var id = fragment_params.get("id");
+if (id === null)
+  id = '42';
+
 var gpx_style = new ol.style.Style({
   stroke: new ol.style.Stroke({
     color: 'rgba(20,50,255,0.5)',
@@ -18,7 +23,7 @@ var locationStyle = new ol.style.Style({
 
 var vectorLayer = new ol.layer.Vector({
   source: new ol.source.Vector({
-    url: '/gpx/42.gpx',
+    url: '/gpx/' + id + '.gpx',
     format: new ol.format.GPX(),
   }),
 
