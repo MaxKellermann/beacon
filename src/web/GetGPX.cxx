@@ -78,7 +78,11 @@ Run(Pg::Connection &db,
 	}
 
 	auto result = db.ExecuteParams(false,
-				       "SELECT ST_X(location),ST_Y(location) FROM fixes WHERE key=$1 ORDER BY time LIMIT 16384",
+				       "SELECT ST_X(location),ST_Y(location),"
+				       "to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
+				       " FROM fixes"
+				       " WHERE key=$1"
+				       " ORDER BY time LIMIT 16384",
 				       key);
 	if (result.IsEmpty()) {
 		NotFound(out);
@@ -100,9 +104,11 @@ Run(Pg::Connection &db,
 			/* skip records without a known location */
 			continue;
 
+		const auto time = row.GetValue(2);
+
 		FCGX_FPrintF(out,
-			     "<trkpt lat=\"%s\" lon=\"%s\"></trkpt>\n",
-			     latitude, longitude);
+			     "<trkpt lat=\"%s\" lon=\"%s\"><time>%s</time></trkpt>\n",
+			     latitude, longitude, time);
 
 	}
 
