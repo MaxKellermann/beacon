@@ -5,6 +5,15 @@ var gpx_style = new ol.style.Style({
   })
 });
 
+var vectorLayer = new ol.layer.Vector({
+  source: new ol.source.Vector({
+    url: '/gpx/42.gpx',
+    format: new ol.format.GPX(),
+  }),
+
+  style: gpx_style
+})
+
 var map = new ol.Map({
   target: 'map',
   layers: [
@@ -12,14 +21,7 @@ var map = new ol.Map({
       source: new ol.source.OSM()
     }),
 
-    new ol.layer.Vector({
-      source: new ol.source.Vector({
-        url: '/gpx/42.gpx',
-        format: new ol.format.GPX(),
-      }),
-
-      style: gpx_style
-    }),
+    vectorLayer,
   ],
 
   view: new ol.View({
