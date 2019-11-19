@@ -34,6 +34,28 @@
 #include "pg/Connection.hxx"
 #include "util/StringCompare.hxx"
 
+#include <json/json.h>
+
+static void
+HandleList(Pg::Connection &db, FCGX_Stream *out)
+{
+	const auto result = db.Execute("SELECT key,"
+				       "to_char(MAX(time), 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
+				       " FROM fixes"
+				       " WHERE time > now() - '4 hours'::interval"
+				       " GROUP BY key");
+	Json::Value root(Json::arrayValue);
+
+	for (const auto &row : result) {
+		Json::Value item(Json::objectValue);
+		item["id"] = row.GetValue(0);
+		item["time"] = row.GetValue(1);
+		root.append(std::move(item));
+	}
+
+	SendResponse(out, root);
+}
+
 void
 HandleRequest(Pg::Connection &db,
 	      FCGX_Stream *in, FCGX_Stream *out, FCGX_Stream *err,
@@ -50,6 +72,8 @@ HandleRequest(Pg::Connection &db,
 
 	if (auto gpx = StringAfterPrefix(path_info, "gpx/"))
 		HandleGPX(db, gpx, out, envp);
+	else if (StringIsEqual(path_info, "list"))
+		HandleList(db, out);
 	else
 		NotFound(out);
 }

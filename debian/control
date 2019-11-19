@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 12~),
  meson (>= 0.47),
  g++ (>= 4:6),
  libfcgi-dev,
+ libjsoncpp-dev,
  libboost-dev (>= 1.67),
  libsystemd-dev
 Standards-Version: 4.0.0
