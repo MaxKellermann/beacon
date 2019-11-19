@@ -1,10 +1,10 @@
 [Unit]
-Description=Beacon GPX converter
+Description=Beacon API
 
 [Service]
 Type=notify
-User=beacon-gpx
-ExecStart=/usr/bin/beacon-gpx
+User=beacon-api
+ExecStart=/usr/bin/beacon-api
 
 # resource limits
 MemoryMax=64M

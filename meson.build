@@ -94,8 +94,9 @@ executable('beacon-receiver',
   install: true,
 )
 
-executable('beacon-gpx',
-  'src/web/GetGPX.cxx',
+executable('beacon-api',
+  'src/api/Main.cxx',
+  'src/api/GetGPX.cxx',
   'src/util/PrintException.cxx',
   'src/util/UriQueryParser.cxx',
   include_directories: inc,

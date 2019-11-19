@@ -28,24 +28,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "GetGPX.hxx"
 #include "pg/Connection.hxx"
-#include "util/PrintException.hxx"
 #include "util/StringCompare.hxx"
 #include "util/UriQueryParser.hxx"
-#include "config.h"
 
-#ifdef HAVE_LIBSYSTEMD
-#include <systemd/sd-daemon.h>
-#endif
-
-#include <fastcgi.h>
 #include <fcgiapp.h>
 
 #include <string>
-
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 static void
 NotFound(FCGX_Stream *out) noexcept
@@ -93,21 +83,11 @@ SelectFixes(Pg::Connection &db, const uint64_t key, const std::string &since)
 				key);
 }
 
-static void
-Run(Pg::Connection &db,
-    FCGX_Stream *in, FCGX_Stream *out, FCGX_Stream *err,
-    FCGX_ParamArray envp) noexcept
+void
+HandleGPX(Pg::Connection &db,
+	  const char *path_info,
+	  FCGX_Stream *out, FCGX_ParamArray envp) noexcept
 {
-	(void)in;
-	(void)err;
-	(void)envp;
-
-	const char *const path_info = FCGX_GetParam("PATH_INFO", envp);
-	if (path_info == nullptr) {
-		NotFound(out);
-		return;
-	}
-
 	char *endptr;
 	const uint64_t key = strtoull(path_info, &endptr, 10);
 	if (endptr == path_info || (*endptr != 0 && !StringIsEqual(endptr, ".gpx"))) {
@@ -147,42 +127,4 @@ Run(Pg::Connection &db,
 	}
 
 	FCGX_PutS("</trkseg></trk></gpx>\n", out);
-}
-
-int
-main(int, const char *const*) noexcept
-try {
-#ifdef HAVE_LIBSYSTEMD
-	/* support systemd socket activation by copying systemd's fd
-	   to stdin */
-	int n = sd_listen_fds(true);
-	if (n > 0) {
-		if (n != 1)
-			throw "Too many systemd fds";
-
-		if (dup3(SD_LISTEN_FDS_START, FCGI_LISTENSOCK_FILENO, O_CLOEXEC) < 0)
-			throw "dup2() failed";
-		close(SD_LISTEN_FDS_START);
-	}
-#endif
-
-	const char *_db = "dbname=beacon"; // TODO make configurable
-	Pg::Connection db(_db);
-
-	FCGX_Init();
-	FCGX_Request request;
-	FCGX_InitRequest(&request, 0, 0);
-
-#ifdef HAVE_LIBSYSTEMD
-	/* tell systemd we're ready */
-	sd_notify(0, "READY=1");
-#endif
-
-	while (FCGX_Accept_r(&request) == 0)
-		Run(db, request.in, request.out, request.err, request.envp);
-
-	return EXIT_SUCCESS;
-} catch (...) {
-	PrintException(std::current_exception());
-	return EXIT_FAILURE;
 }

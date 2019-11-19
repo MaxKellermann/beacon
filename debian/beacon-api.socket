@@ -1,9 +1,9 @@
 [Unit]
-Description=Beacon GPX converter
+Description=Beacon API
 Before=nginx.service
 
 [Socket]
-ListenStream=%t/beacon/gpx.socket
+ListenStream=%t/beacon/api.socket
 
 [Install]
 WantedBy=nginx.service
