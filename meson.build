@@ -97,6 +97,7 @@ executable('beacon-receiver',
 executable('beacon-gpx',
   'src/web/GetGPX.cxx',
   'src/util/PrintException.cxx',
+  'src/util/UriQueryParser.cxx',
   include_directories: inc,
   dependencies: [
     libfcgi,
