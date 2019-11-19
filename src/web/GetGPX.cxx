@@ -31,6 +31,7 @@
 #include "pg/Connection.hxx"
 #include "util/PrintException.hxx"
 #include "util/StringCompare.hxx"
+#include "util/UriQueryParser.hxx"
 #include "config.h"
 
 #ifdef HAVE_LIBSYSTEMD
@@ -55,9 +56,32 @@ NotFound(FCGX_Stream *out) noexcept
 		  "Not found\n", out);
 }
 
-static auto
-SelectFixes(Pg::Connection &db, const uint64_t key)
+static std::string
+GetQueryParameter(FCGX_ParamArray envp, StringView name) noexcept
 {
+	const char *query_string = FCGX_GetParam("QUERY_STRING", envp);
+	if (query_string == nullptr)
+		return {};
+
+	auto value = UriFindRawQueryParameter(query_string, name);
+	if (value.IsNull())
+		return {};
+
+	// TODO: unescape
+	return {value.data, value.size};
+}
+
+static auto
+SelectFixes(Pg::Connection &db, const uint64_t key, const std::string &since)
+{
+	if (!since.empty())
+		return db.ExecuteParams(false,
+					"SELECT ST_X(location),ST_Y(location),"
+					"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
+					" FROM fixes"
+					" WHERE key=$1 AND time>=$2"
+					" ORDER BY time LIMIT 16384",
+					key, since.c_str());
 	return db.ExecuteParams(false,
 				"SELECT ST_X(location),ST_Y(location),"
 				"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
@@ -89,7 +113,9 @@ Run(Pg::Connection &db,
 		return;
 	}
 
-	auto result = SelectFixes(db, key);
+	const auto since = GetQueryParameter(envp, "since");
+
+	auto result = SelectFixes(db, key, since);
 	if (result.IsEmpty()) {
 		NotFound(out);
 		return;
