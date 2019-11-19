@@ -1,3 +1,10 @@
+var gpx_style = new ol.style.Style({
+  stroke: new ol.style.Stroke({
+    color: 'rgba(20,50,255,0.5)',
+    width: 3
+  })
+});
+
 var map = new ol.Map({
   target: 'map',
   layers: [
@@ -10,6 +17,8 @@ var map = new ol.Map({
         url: '/gpx/42.gpx',
         format: new ol.format.GPX(),
       }),
+
+      style: gpx_style
     }),
   ],
 
