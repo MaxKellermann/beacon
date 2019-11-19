@@ -96,6 +96,9 @@ Run(Pg::Connection &db,
 	for (const auto &row : result) {
 		const auto longitude = row.GetValue(0);
 		const auto latitude = row.GetValue(1);
+		if (*longitude == 0 || *latitude == 0)
+			/* skip records without a known location */
+			continue;
 
 		FCGX_FPrintF(out,
 			     "<trkpt lat=\"%s\" lon=\"%s\"></trkpt>\n",
