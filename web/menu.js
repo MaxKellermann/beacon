@@ -1,8 +1,14 @@
 function switchTrack(control) {
   let id = control.options[control.selectedIndex].value;
+  if (id == '')
+    id = null;
+
   map.removeLayer(vectorLayer);
-  vectorLayer = loadTrackLayer(id);
-  map.addLayer(vectorLayer);
+
+  if (id !== null) {
+    vectorLayer = loadTrackLayer(id);
+    map.addLayer(vectorLayer);
+  }
 }
 
 function updateTrackList(control) {

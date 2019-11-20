@@ -1,7 +1,5 @@
 var fragment_params = new URLSearchParams(window.location.hash.substr(1));
 var id = fragment_params.get("id");
-if (id === null)
-  id = '42';
 
 var gpx_style = new ol.style.Style({
   stroke: new ol.style.Stroke({
@@ -22,7 +20,7 @@ var locationStyle = new ol.style.Style({
 });
 
 function loadTrackLayer(id) {
-  var vectorLayer = new ol.layer.Vector({
+  let vectorLayer = new ol.layer.Vector({
     source: new ol.source.Vector({
       url: '/api/gpx/' + id + '.gpx',
       format: new ol.format.GPX(),
@@ -47,16 +45,12 @@ function loadTrackLayer(id) {
   return vectorLayer;
 }
 
-var vectorLayer = loadTrackLayer(id);
-
 var map = new ol.Map({
   target: 'map',
   layers: [
     new ol.layer.Tile({
       source: new ol.source.OSM()
     }),
-
-    vectorLayer,
   ],
 
   view: new ol.View({
@@ -64,6 +58,12 @@ var map = new ol.Map({
     zoom: 14
   })
 });
+
+var vectorLayer = null;
+if (id !== null) {
+  vectorLayer = loadTrackLayer(id);
+  map.addLayer(vectorLayer);
+}
 
 /**
  * Send a GET request and pass the parsed and projected response body as a
@@ -85,6 +85,9 @@ function onAppend(lineString) {
 }
 
 function appendCoordinates(src) {
+  if (vectorLayer === null)
+    return;
+
   let feature = vectorLayer.getSource().getFeatures()[0]
   let dest = feature.getGeometry();
   let last_time = dest.getLastCoordinate()[2];
@@ -105,6 +108,9 @@ function appendCoordinates(src) {
 }
 
 function updateVectorLayer() {
+  if (vectorLayer === null)
+    return;
+
   let feature = vectorLayer.getSource().getFeatures()[0]
   let currentCoordinate = feature.getGeometry().getLastCoordinate();
   let date = new Date(currentCoordinate[2] * 1000);
