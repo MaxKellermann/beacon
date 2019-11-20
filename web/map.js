@@ -21,22 +21,33 @@ var locationStyle = new ol.style.Style({
   })
 });
 
-var vectorLayer = new ol.layer.Vector({
-  source: new ol.source.Vector({
-    url: '/api/gpx/' + id + '.gpx',
-    format: new ol.format.GPX(),
-  }),
+function loadTrackLayer(id) {
+  var vectorLayer = new ol.layer.Vector({
+    source: new ol.source.Vector({
+      url: '/api/gpx/' + id + '.gpx',
+      format: new ol.format.GPX(),
+    }),
 
-  style: gpx_style
-})
+    style: gpx_style
+  });
 
-vectorLayer.on('postrender', function(evt) {
-  let currentCoordinate = vectorLayer.getSource().getFeatures()[0].getGeometry().getLastCoordinate();
-  let point = new ol.geom.Point(currentCoordinate);
-  let vectorContext = ol.render.getVectorContext(evt);
-  vectorContext.setStyle(locationStyle);
-  vectorContext.drawGeometry(point);
-});
+  vectorLayer.on('postrender', function(evt) {
+    let currentCoordinate = vectorLayer.getSource().getFeatures()[0].getGeometry().getLastCoordinate();
+    let point = new ol.geom.Point(currentCoordinate);
+    let vectorContext = ol.render.getVectorContext(evt);
+    vectorContext.setStyle(locationStyle);
+    vectorContext.drawGeometry(point);
+  });
+
+  vectorLayer.getSource().once('addfeature', function(e) {
+    onAppend(e.feature.getGeometry());
+    scheduleUpdate();
+  });
+
+  return vectorLayer;
+}
+
+var vectorLayer = loadTrackLayer(id);
 
 var map = new ol.Map({
   target: 'map',
@@ -109,8 +120,3 @@ function updateVectorLayer() {
 function scheduleUpdate() {
   setTimeout(updateVectorLayer, 5000);
 }
-
-vectorLayer.getSource().once('addfeature', function(e) {
-  onAppend(e.feature.getGeometry());
-  scheduleUpdate();
-});
