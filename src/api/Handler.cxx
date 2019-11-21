@@ -31,7 +31,7 @@ HandleList(Pg::Connection &db, FCGX_Stream *out)
 	const auto result = db.Execute("SELECT key,"
 				       "to_char(MAX(time), 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
 				       " FROM fixes"
-				       " WHERE time > now() - '4 hours'::interval"
+				       " WHERE time > now() at time zone 'UTC' - '4 hours'::interval"
 				       " GROUP BY key");
 	Json::Value root(Json::arrayValue);
 
