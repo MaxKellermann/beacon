@@ -112,6 +112,7 @@ executable('beacon-api',
   install: true,
 )
 
+subdir('java')
 subdir('test')
 
 if libsystemd.found()

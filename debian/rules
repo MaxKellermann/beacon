@@ -2,6 +2,7 @@
 # -*- mode: makefile; coding: utf-8 -*-
 
 MESON_OPTIONS = \
+	-Djavaclient=disabled \
 	-Dsystemd=enabled
 
 %:

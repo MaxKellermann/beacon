@@ -1,1 +1,2 @@
 option('systemd', type: 'feature', description: 'systemd support')
+option('javaclient', type: 'feature', description: 'build the Java client library')
