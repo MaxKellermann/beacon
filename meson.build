@@ -62,7 +62,7 @@ conf = configuration_data()
 thread_dep = dependency('threads')
 boost_dep = dependency('boost', version: '>= 1.67')
 
-libsystemd = dependency('libsystemd', required: false)
+libsystemd = dependency('libsystemd', required: get_option('systemd'))
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 
 libfcgi = compiler.find_library('fcgi')
