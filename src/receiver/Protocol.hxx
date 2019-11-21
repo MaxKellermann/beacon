@@ -60,7 +60,7 @@ static constexpr int16_t UINT16_MAX_BE = ToBE16(std::numeric_limits<uint16_t>::m
 static constexpr int16_t INT16_MAX_BE = ToBE16(std::numeric_limits<int16_t>::max());
 
 enum class RequestType : uint16_t {
-	NOP = 1,
+	NOP = 0,
 	PING = 1,
 	FIX = 2,
 };

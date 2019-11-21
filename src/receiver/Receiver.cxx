@@ -84,6 +84,9 @@ Receiver::OnDatagramReceived(Client &&client,
 	const auto &fix = *(const P::FixPacket *)data;
 
 	switch (P::RequestType(FromBE16(header.type))) {
+	case P::RequestType::NOP:
+		break;
+
 	case P::RequestType::PING:
 		if (length < sizeof(ping))
 			return;
