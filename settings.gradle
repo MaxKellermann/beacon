@@ -1,0 +1,10 @@
+/* This file clutters the topmost level of the git repository only
+   because that's needed by Gradle's "source dependency" feature, so
+   Java projects can use our Java client library easily if they, for
+   whatever strange reason, chose to use Gradle as their build
+   system. */
+
+/* Oh yeah, thanks Gradle, the Beacon client library for Java is now
+   called "java.jar" because the subdirectory in this repository is
+   called "java". */
+include ':java'

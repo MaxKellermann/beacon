@@ -1,0 +1,11 @@
+apply plugin: 'java-library'
+
+/* This stops Gradle from forcing its idea of a directory structure on
+   us. */
+sourceSets {
+    main {
+        java {
+            srcDirs = ['.']
+        }
+    }
+}
