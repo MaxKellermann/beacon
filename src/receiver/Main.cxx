@@ -125,6 +125,7 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 				 ToStringWithoutPort(client.endpoint).c_str(),
 				 location_s);
 	} catch (...) {
+		fprintf(stderr, "Failed to insert fix into database: ");
 		PrintException(std::current_exception());
 		// TODO what now - reconnect or abort?
 	}
