@@ -15,4 +15,7 @@ pg = static_library(
 
 pg_dep = declare_dependency(
   link_with: pg,
+  dependencies: [
+    libpq,
+  ],
 )
