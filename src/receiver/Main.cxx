@@ -119,6 +119,18 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 		location_s = location_buffer;
 	}
 
+	if (db.GetStatus() == CONNECTION_BAD) {
+		fprintf(stderr, "Reconnecting to database\n");
+
+		try {
+			db.Reconnect();
+		} catch (...) {
+			fprintf(stderr, "Failed to reconnect to database: ");
+			PrintException(std::current_exception());
+			return;
+		}
+	}
+
 	try {
 		db.ExecuteParams("INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))",
 				 key_s,
@@ -127,7 +139,6 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 	} catch (...) {
 		fprintf(stderr, "Failed to insert fix into database: ");
 		PrintException(std::current_exception());
-		// TODO what now - reconnect or abort?
 	}
 }
 
