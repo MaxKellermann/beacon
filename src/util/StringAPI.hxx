@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <string.h>
+#include <cstring>
 
 #ifdef _UNICODE
 #include "WStringAPI.hxx"
@@ -27,42 +27,42 @@ StringFind(const char *haystack, const char *needle) noexcept
 static inline char *
 StringFind(char *haystack, char needle, size_t size) noexcept
 {
-	return (char *)memchr(haystack, needle, size);
+	return (char *)std::memchr(haystack, needle, size);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
 StringFind(const char *haystack, char needle, size_t size) noexcept
 {
-	return (const char *)memchr(haystack, needle, size);
+	return (const char *)std::memchr(haystack, needle, size);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
 StringFind(const char *haystack, char needle) noexcept
 {
-	return strchr(haystack, needle);
+	return std::strchr(haystack, needle);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline char *
 StringFind(char *haystack, char needle) noexcept
 {
-	return strchr(haystack, needle);
+	return std::strchr(haystack, needle);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
 StringFindLast(const char *haystack, char needle) noexcept
 {
-	return strrchr(haystack, needle);
+	return std::strrchr(haystack, needle);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline char *
 StringFindLast(char *haystack, char needle) noexcept
 {
-	return strrchr(haystack, needle);
+	return std::strrchr(haystack, needle);
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
