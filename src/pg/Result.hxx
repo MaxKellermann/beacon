@@ -239,31 +239,19 @@ public:
 	[[gnu::pure]]
 	std::string GetOnlyStringChecked() const noexcept;
 
-	class RowIterator {
+	class RowIterator;
+
+	class Row {
+		friend class Result;
+		friend class RowIterator;
+
 		PGresult *result;
 		unsigned row;
 
-	public:
-		constexpr RowIterator(PGresult *_result, unsigned _row) noexcept
+		constexpr Row(PGresult *_result, unsigned _row) noexcept
 			:result(_result), row(_row) {}
 
-		constexpr bool operator==(const RowIterator &other) const noexcept {
-			return row == other.row;
-		}
-
-		constexpr bool operator!=(const RowIterator &other) const noexcept {
-			return row != other.row;
-		}
-
-		RowIterator &operator++() noexcept {
-			++row;
-			return *this;
-		}
-
-		RowIterator &operator*() noexcept {
-			return *this;
-		}
-
+	public:
 		[[gnu::pure]]
 		const char *GetValue(unsigned column) const noexcept {
 			assert(result != nullptr);
@@ -343,6 +331,36 @@ public:
 			assert(column < (unsigned)::PQnfields(result));
 
 			return BinaryValue(GetValue(column), GetValueLength(column));
+		}
+	};
+
+	Row GetRow(unsigned row) const noexcept {
+		return Row{result, row};
+	}
+
+	class RowIterator {
+		PGresult *result;
+		unsigned row;
+
+	public:
+		constexpr RowIterator(PGresult *_result, unsigned _row) noexcept
+			:result(_result), row(_row) {}
+
+		constexpr bool operator==(const RowIterator &other) const noexcept {
+			return row == other.row;
+		}
+
+		constexpr bool operator!=(const RowIterator &other) const noexcept {
+			return row != other.row;
+		}
+
+		RowIterator &operator++() noexcept {
+			++row;
+			return *this;
+		}
+
+		Row operator*() noexcept {
+			return Row(result, row);
 		}
 	};
 
