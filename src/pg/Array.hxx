@@ -17,7 +17,7 @@ DecodeArray(const char *p);
 
 template<typename L>
 std::string
-EncodeArray(const L &src)
+EncodeArray(const L &src) noexcept
 {
 	if (src.empty())
 		return "{}";
