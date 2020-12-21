@@ -14,6 +14,7 @@
 #include <cinttypes>
 #include <cstdio>
 #include <cstddef>
+#include <string>
 
 #if __cplusplus >= 201703L && !GCC_OLDER_THAN(7,0)
 #include <string_view>
@@ -236,6 +237,12 @@ struct ParamWrapper<std::string_view> {
 };
 
 #endif
+
+template<>
+struct ParamWrapper<std::string> : ParamWrapper<const char *> {
+	ParamWrapper(const std::string &_value) noexcept
+		:ParamWrapper<const char *>(_value.c_str()) {}
+};
 
 /**
  * Specialization for STL container types of std::string instances.
