@@ -311,7 +311,7 @@ public:
 
 template<typename T>
 class ParamCollector<T> {
-	ParamWrapper<T> wrapper;
+	ParamWrapper<typename std::decay<T>::type> wrapper;
 
 public:
 	explicit ParamCollector(const T &t) noexcept
