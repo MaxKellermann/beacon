@@ -184,7 +184,8 @@ protected:
 	}
 
 	template<typename T, typename... Params>
-	static size_t CountDynamic(const T &t, Params... params) noexcept {
+	static size_t CountDynamic(const T &t,
+				   const Params&... params) noexcept {
 		return DynamicParamWrapper<T>::Count(t) +
 			CountDynamic(params...);
 	}
@@ -206,7 +207,7 @@ protected:
 			       const char **values,
 			       int *lengths, int *formats,
 			       unsigned n,
-			       const T &t, Params... params) {
+			       const T &t, const Params&... params) {
 		assert(IsDefined());
 		assert(query != nullptr);
 
@@ -237,7 +238,7 @@ public:
 
 	template<typename... Params>
 	Result ExecuteParams(bool result_binary,
-			     const char *query, Params... _params) {
+			     const char *query, const Params&... _params) {
 		assert(IsDefined());
 		assert(query != nullptr);
 
@@ -251,7 +252,7 @@ public:
 	}
 
 	template<typename... Params>
-	Result ExecuteParams(const char *query, Params... params) {
+	Result ExecuteParams(const char *query, const Params&... params) {
 		return ExecuteParams(false, query, params...);
 	}
 
@@ -261,7 +262,7 @@ public:
 	 * expanded.
 	 */
 	template<typename... Params>
-	Result ExecuteDynamic(const char *query, Params... params) {
+	Result ExecuteDynamic(const char *query, const Params&... params) {
 		assert(IsDefined());
 		assert(query != nullptr);
 
@@ -382,7 +383,7 @@ private:
 public:
 	template<typename... Params>
 	void SendQuery(bool result_binary,
-		       const char *query, Params... _params) {
+		       const char *query, const Params&... _params) {
 		assert(IsDefined());
 		assert(query != nullptr);
 
@@ -394,7 +395,7 @@ public:
 	}
 
 	template<typename... Params>
-	void SendQuery(const char *query, Params... params) {
+	void SendQuery(const char *query, const Params&... params) {
 		SendQuery(false, query, params...);
 	}
 

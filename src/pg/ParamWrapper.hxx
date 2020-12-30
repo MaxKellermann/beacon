@@ -349,7 +349,7 @@ class ParamCollector<T, Rest...> {
 	ParamCollector<Rest...> rest;
 
 public:
-	explicit ParamCollector(const T &t, Rest... _rest) noexcept
+	explicit ParamCollector(const T &t, const Rest&... _rest) noexcept
 		:first(t), rest(_rest...) {}
 
 	static constexpr bool HasBinary() noexcept {
@@ -392,7 +392,7 @@ public:
 	static constexpr size_t count = decltype(collector)::Count();
 	const char *values[count];
 
-	explicit TextParamArray(Params... params) noexcept
+	explicit TextParamArray(const Params&... params) noexcept
 		:collector(params...)
 	{
 		collector.Fill(values);
@@ -408,7 +408,7 @@ public:
 	const char *values[count];
 	int lengths[count], formats[count];
 
-	explicit BinaryParamArray(Params... params) noexcept
+	explicit BinaryParamArray(const Params&... params) noexcept
 		:collector(params...)
 	{
 		collector.Fill(values, lengths, formats);
