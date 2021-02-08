@@ -7,6 +7,7 @@
 #include "Serial.hxx"
 #include "BinaryValue.hxx"
 #include "Array.hxx"
+#include "util/Compiler.h"
 
 #include <iterator>
 #include <list>

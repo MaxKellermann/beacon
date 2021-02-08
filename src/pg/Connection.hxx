@@ -10,8 +10,6 @@
 #include "Notify.hxx"
 #include "Error.hxx"
 
-#include "util/Compiler.h"
-
 #include <libpq-fe.h>
 #include <pg_config.h>
 
@@ -61,49 +59,49 @@ public:
 		return conn != nullptr;
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	ConnStatusType GetStatus() const noexcept {
 		assert(IsDefined());
 
 		return ::PQstatus(conn);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	const char *GetErrorMessage() const noexcept {
 		assert(IsDefined());
 
 		return ::PQerrorMessage(conn);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	int GetProtocolVersion() const noexcept {
 		assert(IsDefined());
 
 		return ::PQprotocolVersion (conn);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	int GetServerVersion() const noexcept {
 		assert(IsDefined());
 
 		return ::PQserverVersion (conn);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	const char *GetParameterStatus(const char *name) const noexcept {
 		assert(IsDefined());
 
 		return PQparameterStatus(conn, name);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	int GetBackendPID() const noexcept {
 		assert(IsDefined());
 
 		return ::PQbackendPID (conn);
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	int GetSocket() const noexcept {
 		assert(IsDefined());
 
@@ -379,7 +377,7 @@ public:
 		Commit();
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	bool IsBusy() const noexcept {
 		assert(IsDefined());
 
@@ -423,13 +421,13 @@ public:
 		return Result(PQgetResult(conn));
 	}
 
-	gcc_pure
+	[[gnu::pure]]
 	std::string Escape(const char *p, size_t length) const noexcept;
 
-	gcc_pure
+	[[gnu::pure]]
 	std::string Escape(const char *p) const noexcept;
 
-	gcc_pure
+	[[gnu::pure]]
 	std::string Escape(const std::string &p) const noexcept {
 		return Escape(p.data(), p.length());
 	}

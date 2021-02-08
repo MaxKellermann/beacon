@@ -6,8 +6,6 @@
 
 #include "util/ConstBuffer.hxx"
 
-#include "util/Compiler.h"
-
 #include <cstddef>
 
 namespace Pg {
