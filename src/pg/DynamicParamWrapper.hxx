@@ -6,8 +6,6 @@
 
 #include "ParamWrapper.hxx"
 
-#include "util/Compiler.h"
-
 #include <vector>
 #include <cstddef>
 #include <cstdio>
@@ -20,7 +18,7 @@ struct DynamicParamWrapper {
 
 	DynamicParamWrapper(const T &t):wrapper(t) {}
 
-	constexpr static size_t Count(gcc_unused const T &t) {
+	constexpr static size_t Count(const T &) {
 		return 1;
 	}
 
@@ -38,9 +36,9 @@ struct DynamicParamWrapper<std::vector<T>> {
 	std::vector<DynamicParamWrapper<T>> items;
 
 	constexpr DynamicParamWrapper(const std::vector<T> &params)
-	:items(params.begin(), params.end()) {}
+		:items(params.begin(), params.end()) {}
 
-	constexpr static size_t Count(gcc_unused const std::vector<T> &v) {
+	constexpr static size_t Count(const std::vector<T> &v) {
 		return v.size();
 	}
 

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "util/Compiler.h"
-
 #include <libpq-fe.h>
 
 #include <algorithm>
