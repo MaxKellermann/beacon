@@ -11,7 +11,6 @@
 #include "Error.hxx"
 
 #include <libpq-fe.h>
-#include <pg_config.h>
 
 #include <new>
 #include <memory>
@@ -397,11 +396,9 @@ public:
 		SendQuery(false, query, params...);
 	}
 
-#if PG_VERSION_NUM >= 90200
 	void SetSingleRowMode() noexcept {
 		PQsetSingleRowMode(conn);
 	}
-#endif
 
 	Result ReceiveResult() noexcept {
 		assert(IsDefined());
