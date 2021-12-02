@@ -244,7 +244,7 @@ public:
 		const AutoParamArray<Params...> params(_params...);
 
 		return CheckResult(::PQexecParams(conn, query, params.count,
-						  nullptr, params.values,
+						  nullptr, params.values.data(),
 						  params.GetLengths(),
 						  params.GetFormats(),
 						  result_binary));
@@ -387,7 +387,7 @@ public:
 		const AutoParamArray<Params...> params(_params...);
 
 		SendQueryParams(result_binary, query, params.count,
-				params.values, params.GetLengths(),
+				params.values.data(), params.GetLengths(),
 				params.GetFormats());
 	}
 
