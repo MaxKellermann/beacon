@@ -238,8 +238,8 @@ public:
 	template<ParamArray A>
 	Result ExecuteParams(bool result_binary, const char *query,
 			     const A &params) {
-		return CheckResult(::PQexecParams(conn, query, params.count,
-						  nullptr, params.values.data(),
+		return CheckResult(::PQexecParams(conn, query, params.size(),
+						  nullptr, params.GetValues(),
 						  params.GetLengths(),
 						  params.GetFormats(),
 						  result_binary));
@@ -386,8 +386,8 @@ public:
 	template<ParamArray A>
 	void SendQuery(bool result_binary, const char *query,
 		       const A &params) {
-		SendQueryParams(result_binary, query, params.count,
-				params.values.data(), params.GetLengths(),
+		SendQueryParams(result_binary, query, params.size(),
+				params.GetValues(), params.GetLengths(),
 				params.GetFormats());
 	}
 
