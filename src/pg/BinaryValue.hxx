@@ -11,13 +11,7 @@
 namespace Pg {
 
 struct BinaryValue : ConstBuffer<void> {
-	BinaryValue() = default;
-
-	constexpr BinaryValue(ConstBuffer<void> _buffer) noexcept
-		:ConstBuffer<void>(_buffer) {}
-
-	constexpr BinaryValue(const void *_value, size_t _size) noexcept
-		:ConstBuffer<void>(_value, _size) {}
+	using ConstBuffer::ConstBuffer;
 
 	gcc_pure
 	bool ToBool() const noexcept {
