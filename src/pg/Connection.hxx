@@ -417,15 +417,7 @@ public:
 	}
 
 	[[gnu::pure]]
-	std::string Escape(const char *p, size_t length) const noexcept;
-
-	[[gnu::pure]]
-	std::string Escape(const char *p) const noexcept;
-
-	[[gnu::pure]]
-	std::string Escape(const std::string &p) const noexcept {
-		return Escape(p.data(), p.length());
-	}
+	std::string Escape(std::string_view src) const noexcept;
 };
 
 } /* namespace Pg */
