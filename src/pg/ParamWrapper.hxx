@@ -7,7 +7,6 @@
 #include "Serial.hxx"
 #include "BinaryValue.hxx"
 #include "Array.hxx"
-#include "util/Compiler.h"
 
 #include <array>
 #include <concepts>
@@ -16,11 +15,8 @@
 #include <cstddef>
 #include <optional>
 #include <string>
-#include <tuple>
-
-#if __cplusplus >= 201703L && !GCC_OLDER_THAN(7,0)
 #include <string_view>
-#endif
+#include <tuple>
 
 namespace Pg {
 
@@ -214,8 +210,6 @@ struct ParamWrapper<bool> {
 	}
 };
 
-#if __cplusplus >= 201703L && !GCC_OLDER_THAN(7,0)
-
 template<>
 struct ParamWrapper<std::string_view> {
 	std::string_view value;
@@ -237,8 +231,6 @@ struct ParamWrapper<std::string_view> {
 		return value.size();
 	}
 };
-
-#endif
 
 template<>
 struct ParamWrapper<std::string> : ParamWrapper<const char *> {
