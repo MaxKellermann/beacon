@@ -11,14 +11,12 @@
 
 #include <array>
 #include <concepts>
-#include <list>
 #include <cinttypes>
 #include <cstdio>
 #include <cstddef>
 #include <optional>
 #include <string>
 #include <tuple>
-#include <type_traits>
 
 #if __cplusplus >= 201703L && !GCC_OLDER_THAN(7,0)
 #include <string_view>
@@ -273,11 +271,12 @@ struct ParamWrapper<T> {
 	}
 };
 
-template<>
-struct ParamWrapper<const std::list<std::string> *> {
+template<typename T>
+requires std::convertible_to<typename T::value_type, std::string_view> && std::forward_iterator<typename T::const_iterator>
+struct ParamWrapper<const T *> {
 	std::string value;
 
-	ParamWrapper(const std::list<std::string> *list) noexcept
+	ParamWrapper(const T *list) noexcept
 		:value(list != nullptr
 		       ? EncodeArray(*list)
 		       : std::string()) {}
