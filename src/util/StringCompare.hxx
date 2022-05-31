@@ -3,12 +3,13 @@
 
 #pragma once
 
-#include "StringView.hxx"
 #include "StringAPI.hxx"
 
 #ifdef _UNICODE
 #include "WStringCompare.hxx"
 #endif
+
+#include <string_view>
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline bool
@@ -19,9 +20,9 @@ StringIsEmpty(const char *string) noexcept
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline bool
-StringStartsWith(const char *haystack, StringView needle) noexcept
+StringStartsWith(const char *haystack, std::string_view needle) noexcept
 {
-	return StringIsEqual(haystack, needle.data, needle.size);
+	return StringIsEqual(haystack, needle.data(), needle.size());
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
@@ -39,26 +40,26 @@ StringEndsWithIgnoreCase(const char *haystack, const char *needle) noexcept;
  */
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
-StringAfterPrefix(const char *haystack, StringView needle) noexcept
+StringAfterPrefix(const char *haystack, std::string_view needle) noexcept
 {
 	return StringStartsWith(haystack, needle)
-		? haystack + needle.size
+		? haystack + needle.size()
 		: nullptr;
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline bool
-StringStartsWithIgnoreCase(const char *haystack, StringView needle) noexcept
+StringStartsWithIgnoreCase(const char *haystack, std::string_view needle) noexcept
 {
-	return StringIsEqualIgnoreCase(haystack, needle.data, needle.size);
+	return StringIsEqualIgnoreCase(haystack, needle.data(), needle.size());
 }
 
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
-StringAfterPrefixIgnoreCase(const char *haystack, StringView needle) noexcept
+StringAfterPrefixIgnoreCase(const char *haystack, std::string_view needle) noexcept
 {
 	return StringStartsWithIgnoreCase(haystack, needle)
-		? haystack + needle.size
+		? haystack + needle.size()
 		: nullptr;
 }
 

@@ -5,6 +5,7 @@
 #include "Response.hxx"
 #include "pg/Connection.hxx"
 #include "util/StringCompare.hxx"
+#include "util/StringView.hxx"
 #include "util/UriQueryParser.hxx"
 
 #include <fcgiapp.h>
