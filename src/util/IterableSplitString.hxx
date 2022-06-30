@@ -26,7 +26,7 @@ class BasicIterableSplitString {
 
 public:
 	constexpr BasicIterableSplitString(StringView _s,
-					   value_type _separator)
+					   value_type _separator) noexcept
 		:s(_s), separator(_separator) {}
 
 	class Iterator final {
@@ -36,15 +36,17 @@ public:
 
 		value_type separator;
 
-		Iterator(StringView _s, value_type _separator)
-			:rest(_s), separator(_separator) {
+		constexpr Iterator(StringView _s,
+				   value_type _separator) noexcept
+			:rest(_s), separator(_separator)
+		{
 			Next();
 		}
 
-		constexpr Iterator(std::nullptr_t n)
+		constexpr Iterator(std::nullptr_t n) noexcept
 			:current(n), rest(n), separator(0) {}
 
-		void Next() {
+		constexpr void Next() noexcept {
 			if (rest == nullptr)
 				current = nullptr;
 			else {
@@ -64,24 +66,24 @@ public:
 	public:
 		using iterator_category = std::forward_iterator_tag;
 
-		Iterator &operator++() {
+		constexpr Iterator &operator++() noexcept{
 			Next();
 			return *this;
 		}
 
-		constexpr bool operator==(Iterator other) const {
+		constexpr bool operator==(Iterator other) const noexcept {
 			return current.data == other.current.data;
 		}
 
-		constexpr bool operator!=(Iterator other) const {
+		constexpr bool operator!=(Iterator other) const noexcept {
 			return !(*this == other);
 		}
 
-		constexpr StringView operator*() const {
+		constexpr StringView operator*() const noexcept {
 			return current;
 		}
 
-		constexpr const StringView *operator->() const {
+		constexpr const StringView *operator->() const noexcept {
 			return &current;
 		}
 	};
@@ -89,11 +91,11 @@ public:
 	using iterator = Iterator;
 	using const_iterator = Iterator;
 
-	const_iterator begin() const {
+	constexpr const_iterator begin() const noexcept {
 		return {s, separator};
 	}
 
-	constexpr const_iterator end() const {
+	constexpr const_iterator end() const noexcept {
 		return {nullptr};
 	}
 };
