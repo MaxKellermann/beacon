@@ -70,3 +70,25 @@ StringAfterPrefixIgnoreCase(const char *haystack, std::string_view needle) noexc
 [[gnu::pure]] [[gnu::nonnull]]
 const char *
 FindStringSuffix(const char *p, const char *suffix) noexcept;
+
+template<typename T>
+bool
+SkipPrefix(std::basic_string_view<T> &haystack,
+	   std::basic_string_view<T> needle) noexcept
+{
+	bool match = haystack.starts_with(needle);
+	if (match)
+		haystack.remove_prefix(needle.size());
+	return match;
+}
+
+template<typename T>
+bool
+RemoveSuffix(std::basic_string_view<T> &haystack,
+	     std::basic_string_view<T> needle) noexcept
+{
+	bool match = haystack.ends_with(needle);
+	if (match)
+		haystack.remove_suffix(needle.size());
+	return match;
+}
