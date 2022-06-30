@@ -3,6 +3,7 @@
 
 #include "UriQueryParser.hxx"
 #include "IterableSplitString.hxx"
+#include "StringView.hxx"
 
 StringView
 UriFindRawQueryParameter(StringView query_string, StringView name) noexcept
