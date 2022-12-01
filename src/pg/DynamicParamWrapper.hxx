@@ -8,7 +8,6 @@
 
 #include <vector>
 #include <cstddef>
-#include <cstdio>
 
 namespace Pg {
 

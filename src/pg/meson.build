@@ -9,6 +9,7 @@ pg = static_library(
   'Error.cxx',
   include_directories: inc,
   dependencies: [
+    fmt_dep,
     libpq,
   ],
 )
@@ -16,6 +17,7 @@ pg = static_library(
 pg_dep = declare_dependency(
   link_with: pg,
   dependencies: [
+    fmt_dep,
     libpq,
   ],
 )
