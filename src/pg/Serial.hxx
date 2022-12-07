@@ -31,6 +31,7 @@ public:
 	 * Convert a string to a #Serial instance.  Throws
 	 * std::invalid_argument on error.
 	 */
+	[[nodiscard]]
 	static Serial Parse(const char *s);
 };
 
