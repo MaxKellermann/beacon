@@ -12,7 +12,7 @@ namespace Pg {
  * C++ representation of a PostgreSQL "serial" value.
  */
 class Serial {
-	typedef int32_t value_type;
+	using value_type = uint_least32_t;
 	value_type value;
 
 public:
