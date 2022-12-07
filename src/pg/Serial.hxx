@@ -23,7 +23,7 @@ public:
 		return value;
 	}
 
-	constexpr operator bool() const noexcept {
+	explicit constexpr operator bool() const noexcept {
 		return value != 0;
 	}
 
@@ -50,7 +50,7 @@ public:
 		return value;
 	}
 
-	constexpr operator bool() const noexcept {
+	explicit constexpr operator bool() const noexcept {
 		return value != 0;
 	}
 
