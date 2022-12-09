@@ -343,7 +343,7 @@ public:
 			f();
 		} catch (...) {
 			if (IsDefined())
-				Execute("ROLLBACK");
+				Rollback();
 			throw;
 		}
 
@@ -363,7 +363,7 @@ public:
 			f();
 		} catch (...) {
 			if (IsDefined())
-				Execute("ROLLBACK");
+				Rollback();
 			throw;
 		}
 
