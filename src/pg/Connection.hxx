@@ -9,6 +9,7 @@
 #include "Result.hxx"
 #include "Notify.hxx"
 #include "Error.hxx"
+#include "util/Concepts.hxx"
 
 #include <libpq-fe.h>
 
@@ -335,8 +336,7 @@ public:
 	 * transaction.  Performs automatic rollback if the function
 	 * throws an exception.
 	 */
-	template<typename F>
-	void DoSerializable(F &&f) {
+	void DoSerializable(Invocable<> auto f) {
 		BeginSerializable();
 
 		try {
@@ -355,8 +355,7 @@ public:
 	 * transaction.  Performs automatic rollback if the function
 	 * throws an exception.
 	 */
-	template<typename F>
-	void DoRepeatableRead(F &&f) {
+	void DoRepeatableRead(Invocable<> auto f) {
 		BeginRepeatableRead();
 
 		try {
