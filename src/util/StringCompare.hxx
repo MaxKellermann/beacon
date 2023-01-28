@@ -11,7 +11,7 @@
 
 #include <string_view>
 
-[[gnu::nonnull]]
+[[gnu::pure]] [[gnu::nonnull]]
 static constexpr bool
 StringIsEmpty(const char *string) noexcept
 {
