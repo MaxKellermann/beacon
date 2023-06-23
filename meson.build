@@ -36,9 +36,6 @@ test_common_flags = [
   '-Wundef',
   '-Wunused',
   '-Wwrite-strings',
-  '-Wpointer-arith',
-  '-Wsign-compare',
-  '-Wno-long-long',
 ]
 
 test_global_common_flags = [
