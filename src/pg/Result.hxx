@@ -172,6 +172,38 @@ public:
 	}
 
 	[[gnu::pure]]
+	std::string_view GetValueView(unsigned row, unsigned column) const noexcept {
+		assert(IsDefined());
+
+		return {GetValue(row, column), GetValueLength(row, column)};
+	}
+
+	[[gnu::pure]]
+	bool GetBoolValue(unsigned row, unsigned column) const noexcept {
+		assert(IsDefined());
+		assert(!::PQgetisnull(result, row, column));
+		assert(::PQftype(result, column) == 16);
+
+		return ::PQgetvalue(result, row, column)[0] == 't';
+	}
+
+	[[gnu::pure]]
+	long GetLongValue(unsigned row, unsigned column) const {
+		assert(IsDefined());
+		assert(!::PQgetisnull(result, row, column));
+		assert(::PQftype(result, column) == 20 /* int8 */
+			|| ::PQftype(result, column) == 23 /* int4 */
+			|| ::PQftype(result, column) == 21 /* int2 */);
+
+		auto s = ::PQgetvalue(result, row, column);
+		char *endptr;
+		auto value = strtol(s, &endptr, 10);
+		assert(endptr != s && *endptr == 0);
+
+		return value;
+	}
+
+	[[gnu::pure]]
 	bool IsValueNull(unsigned row, unsigned column) const noexcept {
 		assert(IsDefined());
 
@@ -248,6 +280,40 @@ public:
 			assert(column < (unsigned)::PQnfields(result));
 
 			return ::PQgetlength(result, row, column);
+		}
+
+		[[gnu::pure]]
+		std::string_view GetValueView(unsigned column) const noexcept {
+			return {GetValue(column), GetValueLength(column)};
+		}
+
+		[[gnu::pure]]
+		bool GetBoolValue(unsigned column) const noexcept {
+			assert(result != nullptr);
+			assert(row < (unsigned)::PQntuples(result));
+			assert(column < (unsigned)::PQnfields(result));
+			assert(::PQftype(result, column) == 16);
+			assert(!::PQgetisnull(result, row, column));
+
+			return ::PQgetvalue(result, row, column)[0] == 't';
+		}
+
+		[[gnu::pure]]
+		long GetLongValue(unsigned column) const {
+			assert(result != nullptr);
+			assert(row < (unsigned)::PQntuples(result));
+			assert(column < (unsigned)::PQnfields(result));
+			assert(!::PQgetisnull(result, row, column));
+			assert(::PQftype(result, column) == 20 /* int8 */
+				|| ::PQftype(result, column) == 23 /* int4 */
+				|| ::PQftype(result, column) == 21 /* int2 */);
+
+			auto s = ::PQgetvalue(result, row, column);
+			char *endptr;
+			auto value = strtol(s, &endptr, 10);
+			assert(endptr != s && *endptr == 0);
+
+			return value;
 		}
 
 		[[gnu::pure]]
