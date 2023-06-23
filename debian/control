@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Max Kellermann <max.kellermann@gmail.com>
 Build-Depends: debhelper (>= 12~),
  meson (>= 0.47),
- g++ (>= 4:6),
+ g++ (>= 4:10),
  libfcgi-dev,
  libjsoncpp-dev,
  libboost-dev (>= 1.67),

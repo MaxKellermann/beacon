@@ -15,7 +15,7 @@ Building
 
 You need:
 
-- a C++17 compliant compiler (e.g. gcc or clang)
+- a C++20 compliant compiler (e.g. gcc or clang)
 - `Boost <http://www.boost.org/>`__
 - `PostgreSQL <https://www.postgresql.org/>`__ and `PostGIS <https://postgis.net/>`__
 - `libfcgi <https://github.com/FastCGI-Archives>`__

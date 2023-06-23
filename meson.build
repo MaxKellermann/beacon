@@ -1,7 +1,7 @@
 project('beacon', 'cpp', version: '0.1',
   meson_version: '>= 0.47',
   default_options: [
-    'cpp_std=c++17'
+    'cpp_std=c++20',
   ],
 )
 
