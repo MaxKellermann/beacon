@@ -12,7 +12,7 @@
 #include <string>
 
 static std::string
-GetQueryParameter(FCGX_ParamArray envp, StringView name) noexcept
+GetQueryParameter(FCGX_ParamArray envp, std::string_view name) noexcept
 {
 	const char *query_string = FCGX_GetParam("QUERY_STRING", envp);
 	if (query_string == nullptr)
