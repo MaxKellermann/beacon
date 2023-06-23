@@ -2,6 +2,7 @@ project('beacon', 'cpp', version: '0.1',
   meson_version: '>= 0.47',
   default_options: [
     'cpp_std=c++20',
+    'warning_level=3',
   ],
 )
 
@@ -19,8 +20,6 @@ common_flags = [
   # disable deprecated boost::system features
   '-DBOOST_SYSTEM_NO_DEPRECATED',
 
-  '-Wall',
-  '-Wextra',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
