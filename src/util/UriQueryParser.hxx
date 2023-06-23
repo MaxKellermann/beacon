@@ -5,7 +5,7 @@
 
 #include "Compiler.h"
 
-struct StringView;
+#include <string_view>
 
 /**
  * Find the first query parameter with the given name and return its
@@ -15,5 +15,6 @@ struct StringView;
  * or nullptr if the parameter does not exist
  */
 gcc_pure
-StringView
-UriFindRawQueryParameter(StringView query_string, StringView name) noexcept;
+std::string_view
+UriFindRawQueryParameter(std::string_view query_string,
+			 std::string_view name) noexcept;

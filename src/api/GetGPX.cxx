@@ -5,7 +5,6 @@
 #include "Response.hxx"
 #include "pg/Connection.hxx"
 #include "util/StringCompare.hxx"
-#include "util/StringView.hxx"
 #include "util/UriQueryParser.hxx"
 
 #include <fcgiapp.h>
@@ -20,11 +19,11 @@ GetQueryParameter(FCGX_ParamArray envp, std::string_view name) noexcept
 		return {};
 
 	auto value = UriFindRawQueryParameter(query_string, name);
-	if (value.IsNull())
+	if (value.data() == nullptr)
 		return {};
 
 	// TODO: unescape
-	return {value.data, value.size};
+	return std::string{value};
 }
 
 static auto
