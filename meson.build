@@ -113,16 +113,16 @@ inc = include_directories(
   '.',
 )
 
+subdir('src/util')
 subdir('src/pg')
 
 executable('beacon-receiver',
   'src/receiver/Main.cxx',
   'src/receiver/Receiver.cxx',
   'src/receiver/Assemble.cxx',
-  'src/util/CRC.cxx',
-  'src/util/PrintException.cxx',
   include_directories: inc,
   dependencies: [
+    util_dep,
     thread_dep,
     boost_dep,
     pg_dep,
@@ -136,10 +136,9 @@ executable('beacon-api',
   'src/api/Handler.cxx',
   'src/api/GetGPX.cxx',
   'src/api/Response.cxx',
-  'src/util/PrintException.cxx',
-  'src/util/UriQueryParser.cxx',
   include_directories: inc,
   dependencies: [
+    util_dep,
     libfcgi,
     libjsoncpp,
     pg_dep,
