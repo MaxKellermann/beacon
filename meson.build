@@ -22,14 +22,15 @@ common_flags = [
   # disable deprecated boost::system features
   '-DBOOST_SYSTEM_NO_DEPRECATED',
 
+]
+
+test_common_flags = [
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
   '-Wredundant-decls', '-Wno-long-long', '-Wundef',
   '-Wunused',
-]
 
-test_common_flags = [
   '-fvisibility=hidden',
 ]
 
