@@ -21,6 +21,8 @@
 #include "Assemble.hxx"
 #include "Protocol.hxx"
 #include "Import.hxx"
+#include "net/SocketError.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "util/ByteOrder.hxx"
 #include "util/CRC.hxx"
 
@@ -28,44 +30,46 @@ namespace Beacon {
 
 namespace P = Beacon::Protocol;
 
-Receiver::Receiver(boost::asio::io_context &io_context,
-		   boost::asio::ip::udp::endpoint endpoint)
-	:socket(io_context, endpoint)
+static UniqueSocketDescriptor
+CreateBindDatagramSocket(SocketAddress address)
 {
-	AsyncReceive();
+	UniqueSocketDescriptor fd;
+	if (!fd.Create(address.GetFamily(), SOCK_DGRAM, 0))
+		throw MakeSocketError("Failed to create socket");
+
+	if (!fd.Bind(address))
+		throw MakeErrno("Failed to bind socket");
+
+	return fd;
 }
 
-Receiver::~Receiver() noexcept
+Receiver::Receiver(EventLoop &event_loop, SocketAddress address)
+	:socket(event_loop, CreateBindDatagramSocket(address), *this)
 {
-	if (socket.is_open()) {
-		socket.cancel();
-		socket.close();
-	}
 }
 
 void
-Receiver::SendBuffer(const boost::asio::ip::udp::endpoint &endpoint,
-		     boost::asio::const_buffer data)
+Receiver::SendBuffer(SocketAddress address, std::span<const std::byte> src)
 {
 	// TODO: use async_send_to()?
 
 	try {
-		socket.send_to(boost::asio::const_buffers_1(data), endpoint, 0);
+		socket.Reply(address, src);
 	} catch (...) {
-		OnSendError(endpoint, std::current_exception());
+		OnSendError(address, std::current_exception());
 	}
 }
 
 void
 Receiver::OnPing(const Client &client, unsigned id) noexcept
 {
-	SendPacket(client.endpoint,
+	SendPacket(client.address,
 		   Beacon::Protocol::MakeAck(client.key, id, 0));
 }
 
 inline void
 Receiver::OnDatagramReceived(Client &&client,
-			   void *data, size_t length)
+			     void *data, size_t length)
 {
 	auto &header = *(P::Header *)data;
 	if (length < sizeof(header))
@@ -103,34 +107,26 @@ Receiver::OnDatagramReceived(Client &&client,
 	}
 }
 
-void
-Receiver::OnReceive(const boost::system::error_code &ec, size_t size)
+bool
+Receiver::OnUdpDatagram(std::span<const std::byte> payload,
+			std::span<UniqueFileDescriptor>,
+			SocketAddress address, int)
 {
 	// TODO: use recvmmsg() on Linux
 
-	if (ec) {
-		if (ec == boost::asio::error::operation_aborted)
-			return;
-
-		socket.close();
-
-		OnError(std::make_exception_ptr(boost::system::system_error(ec)));
-		return;
-	}
-
-	OnDatagramReceived(std::move(client_buffer), buffer, size);
-
-	AsyncReceive();
+	Client client;
+	client.address = address;
+	OnDatagramReceived(std::move(client),
+			   const_cast<std::byte *>(payload.data()), // TOOD no const_cast, please
+			   payload.size());
+	return true;
 }
 
 void
-Receiver::AsyncReceive() noexcept
+Receiver::OnUdpError(std::exception_ptr error) noexcept
 {
-	socket.async_receive_from(boost::asio::buffer(buffer, sizeof(buffer)),
-				  client_buffer.endpoint,
-				  std::bind(&Receiver::OnReceive, this,
-					    std::placeholders::_1,
-					    std::placeholders::_2));
+	socket.Close();
+	OnError(std::move(error));
 }
 
 } /* namespace Beacon */

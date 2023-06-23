@@ -12,16 +12,6 @@ compiler = meson.get_compiler('cpp')
 
 common_flags = [
   '-D_GNU_SOURCE',
-
-  # no header bloat for the iostream library we don't use
-  #'-DBOOST_NO_IOSTREAM',
-
-  # avoid the runtime dependency on libboost_system
-  '-DBOOST_ERROR_CODE_HEADER_ONLY',
-
-  # disable deprecated boost::system features
-  '-DBOOST_SYSTEM_NO_DEPRECATED',
-
 ]
 
 test_common_flags = [
@@ -96,7 +86,6 @@ add_project_arguments(compiler.get_supported_arguments(test_cxxflags), language:
 conf = configuration_data()
 
 thread_dep = dependency('threads')
-boost_dep = dependency('boost', version: '>= 1.67')
 
 libsystemd = dependency('libsystemd', required: get_option('systemd'))
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
@@ -115,6 +104,11 @@ inc = include_directories(
 
 subdir('src/util')
 subdir('src/lib/fmt')
+subdir('src/io')
+subdir('src/system')
+subdir('src/net')
+subdir('src/event')
+subdir('src/event/net')
 subdir('src/pg')
 
 executable('beacon-receiver',
@@ -124,8 +118,9 @@ executable('beacon-receiver',
   include_directories: inc,
   dependencies: [
     util_dep,
+    event_dep,
+    event_net_dep,
     thread_dep,
-    boost_dep,
     pg_dep,
     libsystemd,
     fmt_dep,

@@ -22,14 +22,15 @@
 #include "geo/GeoPoint.hxx"
 #include "pg/Connection.hxx"
 #include "lib/fmt/ExceptionFormatter.hxx"
+#include "event/Loop.hxx"
+#include "net/IPv4Address.hxx"
+#include "net/ToString.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 
 #ifdef HAVE_LIBSYSTEMD
 #include <systemd/sd-daemon.h>
 #endif
-
-#include <boost/asio/io_context.hpp>
 
 #include <fmt/format.h>
 
@@ -46,7 +47,7 @@ class MyReceiver final : public Beacon::Receiver {
 
 public:
 	MyReceiver(Instance &instance,
-		   boost::asio::ip::udp::endpoint endpoint) noexcept;
+		   SocketAddress address) noexcept;
 
 	void OnFix(const Client &client, GeoPoint location) noexcept override;
 
@@ -56,7 +57,7 @@ public:
 };
 
 class Instance {
-	boost::asio::io_context io_context;
+	EventLoop event_loop;
 
 	Pg::Connection db;
 
@@ -66,39 +67,26 @@ public:
 	explicit Instance(const char *_db)
 		:db(_db) {}
 
-	auto &get_io_context() noexcept {
-		return io_context;
+	auto &GetEventLoop() noexcept {
+		return event_loop;
 	}
 
 	auto &GetDatabase() noexcept {
 		return db;
 	}
 
-	void AddReceiver(boost::asio::ip::udp::endpoint endpoint);
+	void AddReceiver(SocketAddress address);
 
 	void Run() {
-		io_context.run();
+		event_loop.Run();
 	}
 };
 
 MyReceiver::MyReceiver(Instance &_instance,
-		       boost::asio::ip::udp::endpoint endpoint) noexcept
-	:Beacon::Receiver(_instance.get_io_context(), endpoint),
+		       SocketAddress address) noexcept
+	:Beacon::Receiver(_instance.GetEventLoop(), address),
 	 instance(_instance)
 {
-}
-
-static std::string
-ToStringWithoutPort(boost::asio::ip::udp::endpoint endpoint) noexcept
-{
-	std::stringstream buffer;
-	buffer << endpoint;
-	auto value = buffer.str();
-	auto colon = value.find(':');
-	if (colon != value.npos)
-		// TODO: IPv6?
-		value.erase(colon);
-	return value;
 }
 
 void
@@ -133,10 +121,15 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 		}
 	}
 
+	char address_buffer[256];
+	const char *address = "?";
+	if (HostToString(address_buffer, sizeof(address_buffer), client.address))
+		address = address_buffer;
+
 	try {
 		db.ExecuteParams("INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))",
 				 key_s,
-				 ToStringWithoutPort(client.endpoint).c_str(),
+				 address,
 				 location_s);
 	} catch (...) {
 		fmt::print(stderr, "Failed to insert fix into database: {}\n",
@@ -145,9 +138,9 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 }
 
 void
-Instance::AddReceiver(boost::asio::ip::udp::endpoint endpoint)
+Instance::AddReceiver(SocketAddress address)
 {
-	receivers.emplace_front(*this, endpoint);
+	receivers.emplace_front(*this, address);
 }
 
 int
@@ -156,8 +149,7 @@ try {
 	const char *db = "dbname=beacon"; // TODO make configurable
 
 	Instance instance(db);
-	instance.AddReceiver(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(),
-							    Beacon::Protocol::DEFAULT_PORT));
+	instance.AddReceiver(IPv4Address{Beacon::Protocol::DEFAULT_PORT});
 
 #ifdef HAVE_LIBSYSTEMD
 	/* tell systemd we're ready */

@@ -5,6 +5,6 @@ executable('submit-fix',
   include_directories: inc,
   dependencies: [
     thread_dep,
-    boost_dep,
+    net_dep,
   ],
 )

@@ -19,9 +19,12 @@
 
 #pragma once
 
-#include <boost/asio/ip/udp.hpp>
+#include "event/net/UdpListener.hxx"
+#include "event/net/UdpHandler.hxx"
+#include "net/SocketAddress.hxx"
 
 #include <exception>
+#include <span>
 
 #include <stdint.h>
 
@@ -29,39 +32,28 @@ struct GeoPoint;
 
 namespace Beacon {
 
-class Receiver {
-	boost::asio::ip::udp::socket socket;
-
-	uint8_t buffer[4096];
+class Receiver : UdpHandler {
+	UdpListener socket;
 
 public:
 	struct Client {
-		boost::asio::ip::udp::endpoint endpoint;
+		SocketAddress address;
 		uint64_t key;
 	};
 
-private:
-	Client client_buffer;
-
 public:
-	Receiver(boost::asio::io_context &io_context,
-		 boost::asio::ip::udp::endpoint endpoint);
+	Receiver(EventLoop &event_loop, SocketAddress address);
 
-	~Receiver() noexcept;
-
-	void SendBuffer(const boost::asio::ip::udp::endpoint &endpoint,
-			boost::asio::const_buffer data);
+	void SendBuffer(SocketAddress address, std::span<const std::byte> src);
 
 	template<typename P>
-	void SendPacket(const boost::asio::ip::udp::endpoint &endpoint,
+	void SendPacket(SocketAddress address,
 			const P &packet) {
-		SendBuffer(endpoint, boost::asio::buffer(&packet, sizeof(packet)));
+		SendBuffer(address, std::as_bytes(std::span{&packet, 1}));
 	}
 
 private:
 	void OnDatagramReceived(Client &&client, void *data, size_t length);
-	void OnReceive(const boost::system::error_code &ec, size_t size);
-	void AsyncReceive() noexcept;
 
 protected:
 	virtual void OnPing(const Client &client, unsigned id) noexcept;
@@ -72,13 +64,20 @@ protected:
 	 * An error has occurred while sending a response to a client.  This
 	 * error is non-fatal.
 	 */
-	virtual void OnSendError(const boost::asio::ip::udp::endpoint &,
+	virtual void OnSendError(SocketAddress,
 				 std::exception_ptr) noexcept {}
 
 	/**
 	 * An error has occurred, and the receiver is defunct.
 	 */
 	virtual void OnError(std::exception_ptr e) noexcept = 0;
+
+private:
+	/* virtual methods from UdpHandler */
+	bool OnUdpDatagram(std::span<const std::byte> payload,
+			   std::span<UniqueFileDescriptor> fds,
+			   SocketAddress address, int uid) final;
+	void OnUdpError(std::exception_ptr error) noexcept final;
 };
 
 } /* namespace Beacon */

@@ -31,11 +31,13 @@
 
 #include "receiver/Protocol.hxx"
 #include "receiver/Export.hxx"
+#include "net/AddressInfo.hxx"
+#include "net/Resolver.hxx"
+#include "net/SocketAddress.hxx"
+#include "net/SocketError.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "util/PrintException.hxx"
 #include "util/CRC.hxx"
-
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/udp.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,12 +46,14 @@ namespace P = Beacon::Protocol;
 
 template<typename P>
 static void
-SendPacket(boost::asio::ip::udp::socket &s, boost::asio::ip::udp::endpoint e,
+SendPacket(SocketDescriptor s, SocketAddress address,
 	   P &&packet)
 {
 	packet.header.crc = 0;
 	packet.header.crc = ToBE16(UpdateCRC16CCITT(&packet, sizeof(packet), 0));
-	s.send_to(boost::asio::buffer(&packet, sizeof(packet)), e, 0);
+	auto nbytes = s.Write(&packet, sizeof(packet), address);
+	if (nbytes < 0)
+		throw MakeSocketError("Failed to send");
 }
 
 int
@@ -65,9 +69,9 @@ try {
 	const char *lat_s = argv[3];
 	const char *lon_s = argv[4];
 
-	const boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(),
-							  server_s,
-							  P::DEFAULT_PORT_STRING);
+	static constexpr auto hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_DGRAM);
+	const auto ai = Resolve(server_s, P::DEFAULT_PORT_STRING, &hints);
+
 	const uint64_t key = strtoull(key_s, nullptr, 16);
 	const double lat = strtod(lat_s, nullptr);
 	const double lon = strtod(lon_s, nullptr);
@@ -76,12 +80,12 @@ try {
 	P::FixPacket packet(key);
 	packet.location = P::ExportGeoPoint(location);
 
-	boost::asio::io_context io_context;
-	boost::asio::ip::udp::resolver resolver(io_context);
-	const auto server = *resolver.resolve(query);
+	const auto &server = ai.GetBest();
 
-	boost::asio::ip::udp::socket socket(io_context);
-	socket.open(boost::asio::ip::udp::v4());
+	UniqueSocketDescriptor socket;
+	if (!socket.Create(server.GetFamily(), server.GetType(), server.GetProtocol()))
+		throw MakeSocketError("Failed to create socket");
+
 	SendPacket(socket, server, packet);
 
 	return EXIT_SUCCESS;
