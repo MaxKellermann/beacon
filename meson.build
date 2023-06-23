@@ -114,6 +114,7 @@ inc = include_directories(
 )
 
 subdir('src/util')
+subdir('src/lib/fmt')
 subdir('src/pg')
 
 executable('beacon-receiver',
@@ -127,6 +128,7 @@ executable('beacon-receiver',
     boost_dep,
     pg_dep,
     libsystemd,
+    fmt_dep,
   ],
   install: true,
 )

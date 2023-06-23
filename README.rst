@@ -19,6 +19,7 @@ You need:
 - `Boost <http://www.boost.org/>`__
 - `PostgreSQL <https://www.postgresql.org/>`__ and `PostGIS <https://postgis.net/>`__
 - `libfcgi <https://github.com/FastCGI-Archives>`__
+- `libfmt <https://fmt.dev/>`__
 - `jsoncpp <https://github.com/open-source-parsers/jsoncpp>`__
 - `Meson 0.47 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
 

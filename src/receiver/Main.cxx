@@ -21,6 +21,7 @@
 #include "Receiver.hxx"
 #include "geo/GeoPoint.hxx"
 #include "pg/Connection.hxx"
+#include "lib/fmt/ExceptionFormatter.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 
@@ -29,6 +30,8 @@
 #endif
 
 #include <boost/asio/io_context.hpp>
+
+#include <fmt/format.h>
 
 #include <forward_list>
 #include <sstream>
@@ -101,14 +104,13 @@ ToStringWithoutPort(boost::asio::ip::udp::endpoint endpoint) noexcept
 void
 MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 {
-	fprintf(stderr, "fix %f %f\n",
-		location.latitude.Degrees(), location.longitude.Degrees());
+	fmt::print(stderr, "fix {} {}\n",
+		   location.latitude.Degrees(), location.longitude.Degrees());
 
 	auto &db = instance.GetDatabase();
 
-	char key_buffer[32];
-	snprintf(key_buffer, sizeof(key_buffer), "%" PRIu64, client.key);
-	const char *key_s = key_buffer;
+	const fmt::format_int key_buffer{client.key};
+	const char *key_s = key_buffer.c_str();
 
 	char location_buffer[128];
 	const char *location_s = nullptr;
@@ -125,8 +127,8 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 		try {
 			db.Reconnect();
 		} catch (...) {
-			fprintf(stderr, "Failed to reconnect to database: ");
-			PrintException(std::current_exception());
+			fmt::print(stderr, "Failed to reconnect to database: {}\n",
+				   std::current_exception());
 			return;
 		}
 	}
@@ -137,8 +139,8 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 				 ToStringWithoutPort(client.endpoint).c_str(),
 				 location_s);
 	} catch (...) {
-		fprintf(stderr, "Failed to insert fix into database: ");
-		PrintException(std::current_exception());
+		fmt::print(stderr, "Failed to insert fix into database: {}\n",
+			   std::current_exception());
 	}
 }
 
