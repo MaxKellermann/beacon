@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Max Kellermann <max.kellermann@gmail.com>
 Build-Depends: debhelper (>= 12~),
- meson (>= 0.47),
+ meson (>= 0.56),
  g++ (>= 4:10),
  libfcgi-dev,
  libjsoncpp-dev,

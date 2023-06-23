@@ -1,10 +1,12 @@
 project('beacon', 'cpp', version: '0.1',
-  meson_version: '>= 0.47',
+  meson_version: '>= 0.56',
   default_options: [
     'cpp_std=c++20',
     'warning_level=3',
   ],
 )
+
+debug = get_option('b_ndebug') != 'true'
 
 compiler = meson.get_compiler('cpp')
 
@@ -31,7 +33,7 @@ test_common_flags = [
   '-fvisibility=hidden',
 ]
 
-if get_option('buildtype') != 'debug'
+if not debug
   test_common_flags += [
     '-ffunction-sections',
     '-fdata-sections',
