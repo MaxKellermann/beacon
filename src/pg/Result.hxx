@@ -6,8 +6,6 @@
 
 #include "BinaryValue.hxx"
 
-#include "util/Compiler.h"
-
 #include <libpq-fe.h>
 
 #include <cassert>
@@ -234,7 +232,7 @@ public:
 			return *this;
 		}
 
-		gcc_pure
+		[[gnu::pure]]
 		const char *GetValue(unsigned column) const noexcept {
 			assert(result != nullptr);
 			assert(row < (unsigned)::PQntuples(result));
