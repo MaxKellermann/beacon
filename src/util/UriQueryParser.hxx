@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "Compiler.h"
-
 #include <string_view>
 
 /**
@@ -14,7 +12,7 @@
  * @return the raw value (pointing into the #query_string parameter)
  * or nullptr if the parameter does not exist
  */
-gcc_pure
+[[gnu::pure]]
 std::string_view
 UriFindRawQueryParameter(std::string_view query_string,
 			 std::string_view name) noexcept;

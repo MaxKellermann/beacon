@@ -3,15 +3,13 @@
 
 #pragma once
 
-#include "util/Compiler.h"
-
 #include <stdint.h>
 
 namespace Beacon::Protocol {
 
 struct AckPacket;
 
-gcc_const
+[[gnu::const]]
 AckPacket
 MakeAck(uint64_t key, uint16_t id, uint32_t flags) noexcept;
 
