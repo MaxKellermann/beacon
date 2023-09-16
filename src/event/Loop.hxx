@@ -2,8 +2,7 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <max.kellermann@ionos.com>
 
-#ifndef EVENT_LOOP_HXX
-#define EVENT_LOOP_HXX
+#pragma once
 
 #include "Features.h"
 #include "Chrono.hxx"
@@ -15,6 +14,13 @@
 #ifndef NO_FINE_TIMER_EVENT
 #include "TimerList.hxx"
 #endif // NO_FINE_TIMER_EVENT
+
+#ifdef HAVE_THREADED_EVENT_LOOP
+#include "WakeFD.hxx"
+#include "SocketEvent.hxx"
+#include "thread/Id.hxx"
+#include "thread/Mutex.hxx"
+#endif
 
 #ifndef NDEBUG
 #include "util/BindMethod.hxx"
@@ -30,6 +36,11 @@ class EventLoop final
 {
 	EpollFD poll_backend;
 
+#ifdef HAVE_THREADED_EVENT_LOOP
+	WakeFD wake_fd;
+	SocketEvent wake_event{*this, BIND_THIS_METHOD(OnSocketReady), wake_fd.GetSocket()};
+#endif
+
 	TimerWheel coarse_timers;
 
 #ifndef NO_FINE_TIMER_EVENT
@@ -44,6 +55,13 @@ class EventLoop final
 	 * This is like #defer, but gets invoked when the loop is idle.
 	 */
 	DeferList idle;
+
+#ifdef HAVE_THREADED_EVENT_LOOP
+	Mutex mutex;
+
+	using InjectList = IntrusiveList<InjectEvent>;
+	InjectList inject;
+#endif
 
 	using SocketList = IntrusiveList<SocketEvent>;
 
@@ -64,6 +82,21 @@ class EventLoop final
 	PostCallback post_callback = nullptr;
 #endif
 
+#ifdef HAVE_THREADED_EVENT_LOOP
+	/**
+	 * A reference to the thread that is currently inside Run().
+	 */
+	ThreadId thread = ThreadId::Null();
+
+	/**
+	 * Is this #EventLoop alive, i.e. can events be scheduled?
+	 * This is used by BlockingCall() to determine whether
+	 * schedule in the #EventThread or to call directly (if
+	 * there's no #EventThread yet/anymore).
+	 */
+	bool alive;
+#endif
+
 	bool quit;
 
 	/**
@@ -72,11 +105,29 @@ class EventLoop final
 	 */
 	bool again;
 
+#ifdef HAVE_THREADED_EVENT_LOOP
+	bool quit_injected = false;
+
+	/**
+	 * True when handling callbacks, false when waiting for I/O or
+	 * timeout.
+	 *
+	 * Protected with #mutex.
+	 */
+	bool busy = true;
+#endif
+
 	ClockCache<std::chrono::steady_clock> steady_clock_cache;
 	ClockCache<std::chrono::system_clock> system_clock_cache;
 
 public:
+#ifdef HAVE_THREADED_EVENT_LOOP
+	explicit EventLoop(ThreadId _thread);
+
+	EventLoop():EventLoop(ThreadId::GetCurrent()) {}
+#else
 	EventLoop();
+#endif
 	~EventLoop() noexcept;
 
 	EventLoop(const EventLoop &other) = delete;
@@ -109,6 +160,10 @@ public:
 	 */
 	[[gnu::pure]]
 	const auto &SteadyNow() const noexcept {
+#ifdef HAVE_THREADED_EVENT_LOOP
+		assert(IsInside());
+#endif
+
 		return steady_clock_cache.now();
 	}
 
@@ -120,6 +175,10 @@ public:
 	 */
 	[[gnu::pure]]
 	const auto &SystemNow() const noexcept {
+#ifdef HAVE_THREADED_EVENT_LOOP
+		assert(IsInside());
+#endif
+
 		return system_clock_cache.now();
 	}
 
@@ -131,6 +190,22 @@ public:
 	void Break() noexcept {
 		quit = true;
 	}
+
+#ifdef HAVE_THREADED_EVENT_LOOP
+	/**
+	 * Like Break(), but thread-safe.  It is also non-blocking:
+	 * after returning, it is not guaranteed that the EventLoop
+	 * has really stopped.
+	 */
+	void InjectBreak() noexcept {
+		{
+			const std::scoped_lock lock{mutex};
+			quit_injected = true;
+		}
+
+		wake_fd.Write();
+	}
+#endif // HAVE_THREADED_EVENT_LOOP
 
 	bool IsEmpty() const noexcept {
 		return coarse_timers.IsEmpty() &&
@@ -161,6 +236,23 @@ public:
 	void AddDefer(DeferEvent &e) noexcept;
 	void AddIdle(DeferEvent &e) noexcept;
 
+#ifdef HAVE_THREADED_EVENT_LOOP
+	/**
+	 * Schedule a call to the InjectEvent.
+	 *
+	 * This method is thread-safe.
+	 */
+	void AddInject(InjectEvent &d) noexcept;
+
+	/**
+	 * Cancel a pending call to the InjectEvent.
+	 * However after returning, the call may still be running.
+	 *
+	 * This method is thread-safe.
+	 */
+	void RemoveInject(InjectEvent &d) noexcept;
+#endif
+
 	void Run() noexcept;
 
 private:
@@ -172,6 +264,15 @@ private:
 	 * @return false if there was no such event
 	 */
 	bool RunOneIdle() noexcept;
+
+#ifdef HAVE_THREADED_EVENT_LOOP
+	/**
+	 * Invoke all pending InjectEvents.
+	 *
+	 * Caller must lock the mutex.
+	 */
+	void HandleInject() noexcept;
+#endif
 
 	/**
 	 * Invoke all expired #TimerEvent instances and return the
@@ -188,12 +289,37 @@ private:
 	 */
 	bool Wait(Event::Duration timeout) noexcept;
 
+#ifdef HAVE_THREADED_EVENT_LOOP
+	void OnSocketReady(unsigned flags) noexcept;
+#endif
+
 	void RunPost() noexcept {
 #ifndef NDEBUG
 		if (post_callback)
 			post_callback();
 #endif
 	}
-};
 
+public:
+#ifdef HAVE_THREADED_EVENT_LOOP
+	void SetAlive(bool _alive) noexcept {
+		alive = _alive;
+	}
+
+	bool IsAlive() const noexcept {
+		return alive;
+	}
 #endif
+
+	/**
+	 * Are we currently running inside this EventLoop's thread?
+	 */
+	[[gnu::pure]]
+	bool IsInside() const noexcept {
+#ifdef HAVE_THREADED_EVENT_LOOP
+		return thread.IsInside();
+#else
+		return true;
+#endif
+	}
+};
