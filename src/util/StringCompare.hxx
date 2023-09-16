@@ -70,6 +70,21 @@ StringStartsWithIgnoreCase(const char *haystack, std::string_view needle) noexce
 	return StringIsEqualIgnoreCase(haystack, needle.data(), needle.size());
 }
 
+[[gnu::pure]]
+static inline bool
+StringStartsWithIgnoreCase(std::string_view haystack, std::string_view needle) noexcept
+{
+	return haystack.size() >= needle.size() &&
+		StringIsEqualIgnoreCase(haystack.data(),
+					needle.data(), needle.size());
+}
+
+/**
+ * Returns the portion of the string after a prefix.  If the string
+ * does not begin with the specified prefix, this function returns
+ * nullptr.
+ * This function is case-independent.
+ */
 [[gnu::pure]] [[gnu::nonnull]]
 static inline const char *
 StringAfterPrefixIgnoreCase(const char *haystack, std::string_view needle) noexcept
@@ -77,6 +92,16 @@ StringAfterPrefixIgnoreCase(const char *haystack, std::string_view needle) noexc
 	return StringStartsWithIgnoreCase(haystack, needle)
 		? haystack + needle.size()
 		: nullptr;
+}
+
+[[gnu::pure]]
+static inline std::string_view
+StringAfterPrefixIgnoreCase(std::string_view haystack,
+			    std::string_view needle) noexcept
+{
+	return StringStartsWithIgnoreCase(haystack, needle)
+		? haystack.substr(needle.size())
+		: std::string_view{};
 }
 
 /**
