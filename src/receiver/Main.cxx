@@ -107,7 +107,7 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 
 	char address_buffer[256];
 	const char *address = "?";
-	if (HostToString(address_buffer, sizeof(address_buffer), client.address))
+	if (HostToString(address_buffer, client.address))
 		address = address_buffer;
 
 	try {
