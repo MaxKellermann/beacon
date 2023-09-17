@@ -415,6 +415,12 @@ public:
 		return Result(PQgetResult(conn));
 	}
 
+	bool RequestCancel() noexcept {
+		assert(IsDefined());
+
+		return PQrequestCancel(conn) == 1;
+	}
+
 	[[gnu::pure]]
 	std::string Escape(std::string_view src) const noexcept;
 };
