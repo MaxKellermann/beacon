@@ -2,6 +2,10 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <mk@cm4all.com>
 
+/*
+ * Small utilities for PostgreSQL clients.
+ */
+
 #pragma once
 
 #include <forward_list>
