@@ -8,7 +8,7 @@
 #include "lib/fmt/ExceptionFormatter.hxx"
 #include "event/Loop.hxx"
 #include "net/IPv4Address.hxx"
-#include "net/ToString.hxx"
+#include "net/FormatAddress.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 

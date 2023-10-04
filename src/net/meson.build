@@ -1,6 +1,7 @@
 net = static_library(
   'net',
   'AddressInfo.cxx',
+  'FormatAddress.cxx',
   'HostParser.cxx',
   'IPv4Address.cxx',
   'IPv6Address.cxx',
@@ -8,7 +9,6 @@ net = static_library(
   'SocketAddress.cxx',
   'SocketDescriptor.cxx',
   'SocketError.cxx',
-  'ToString.cxx',
   'UniqueSocketDescriptor.cxx',
   include_directories: inc,
   dependencies: [
