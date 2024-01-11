@@ -10,6 +10,7 @@
 #include "net/UniqueSocketDescriptor.hxx"
 #include "util/PrintException.hxx"
 #include "util/CRC.hxx"
+#include "util/SpanCast.hxx"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +24,7 @@ SendPacket(SocketDescriptor s, SocketAddress address,
 {
 	packet.header.crc = 0;
 	packet.header.crc = ToBE16(UpdateCRC16CCITT(&packet, sizeof(packet), 0));
-	auto nbytes = s.Write(&packet, sizeof(packet), address);
+	auto nbytes = s.WriteNoWait(ReferenceAsBytes(packet), address);
 	if (nbytes < 0)
 		throw MakeSocketError("Failed to send");
 }
