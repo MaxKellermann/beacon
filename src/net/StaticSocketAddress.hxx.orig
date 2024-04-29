@@ -7,10 +7,7 @@
 #include "net/Features.hxx" // for HAVE_TCP, HAVE_UN
 
 #include <cassert>
-
-#ifdef HAVE_UN
 #include <string_view>
-#endif
 
 /**
  * An OO wrapper for struct sockaddr_storage.
