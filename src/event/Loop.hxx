@@ -26,6 +26,8 @@
 #include "util/BindMethod.hxx"
 #endif
 
+#include <cassert>
+
 class DeferEvent;
 class SocketEvent;
 
