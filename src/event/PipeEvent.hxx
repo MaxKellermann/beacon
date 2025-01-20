@@ -49,6 +49,18 @@ public:
 		event.ClearReadyFlags(flags);
 	}
 
+	unsigned GetScheduledFlags() const noexcept {
+		return event.GetScheduledFlags();
+	}
+
+	unsigned GetReadyFlags() const noexcept {
+		return event.GetReadyFlags();
+	}
+
+	void SetReadyFlags(unsigned flags) noexcept {
+		event.SetReadyFlags(flags);
+	}
+
 	bool Schedule(unsigned flags) noexcept {
 		return event.Schedule(flags);
 	}
