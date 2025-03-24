@@ -8,6 +8,8 @@
 #include "lib/fmt/RuntimeError.hxx"
 #include "util/CharUtil.hxx"
 
+#include <algorithm> // for std:copy()
+
 #ifdef _WIN32
 #include <ws2tcpip.h>
 #else
