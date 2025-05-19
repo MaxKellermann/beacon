@@ -69,6 +69,14 @@ public:
 		event.CancelWrite();
 	}
 
+	void CancelOnlyRead() noexcept {
+		event.CancelOnlyRead();
+	}
+
+	void CancelOnlyWrite() noexcept {
+		event.CancelOnlyWrite();
+	}
+
 	void ScheduleImplicit() noexcept {
 		event.ScheduleImplicit();
 	}
