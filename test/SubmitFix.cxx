@@ -41,7 +41,12 @@ try {
 	const char *lat_s = argv[3];
 	const char *lon_s = argv[4];
 
-	static constexpr auto hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_DGRAM);
+	static constexpr struct addrinfo hints{
+		.ai_flags = AI_ADDRCONFIG,
+		.ai_family = AF_UNSPEC,
+		.ai_socktype = SOCK_DGRAM,
+	};
+
 	const auto ai = Resolve(server_s, P::DEFAULT_PORT_STRING, &hints);
 
 	const uint64_t key = strtoull(key_s, nullptr, 16);
