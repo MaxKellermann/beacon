@@ -5,7 +5,7 @@
 #define STATIC_SOCKET_ADDRESS_HXX
 
 #include "SocketAddress.hxx" // IWYU pragma: export
-#include "Features.hxx"
+#include "net/Features.hxx" // for HAVE_TCP, HAVE_UN
 
 #include <cassert>
 #include <string_view>

@@ -5,6 +5,7 @@
 #include "ToString.hxx"
 #include "SocketAddress.hxx"
 #include "IPv4Address.hxx"
+#include "net/Features.hxx" // for HAVE_TCP, HAVE_IPV6, HAVE_UN
 
 #include <algorithm>
 #include <cassert>
