@@ -4,6 +4,7 @@
 #pragma once
 
 #include "BackendEvents.hxx"
+#include "event/Features.h" // for USE_EPOLL
 #include "net/SocketDescriptor.hxx"
 #include "util/BindMethod.hxx"
 #include "util/IntrusiveList.hxx"
@@ -167,6 +168,7 @@ public:
 		Schedule(IMPLICIT_FLAGS);
 	}
 
+#ifdef USE_EPOLL
 	/**
 	 * Cancel READ but schedule READ_HANGUP.  This is useful to be
 	 * able to detect hangup while we're not interested in reading
@@ -176,6 +178,7 @@ public:
 	void CancelReadAndScheduleReadHangup() noexcept {
 		Schedule((GetScheduledFlags() & ~READ) | READ_HANGUP);
 	}
+#endif
 
 	bool IsReadPending() const noexcept {
 		return GetScheduledFlags() & READ;
