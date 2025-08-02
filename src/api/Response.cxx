@@ -3,7 +3,7 @@
 
 #include "Response.hxx"
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 void
 NotFound(FCGX_Stream *out) noexcept
@@ -15,12 +15,12 @@ NotFound(FCGX_Stream *out) noexcept
 }
 
 void
-SendResponse(FCGX_Stream *out, const Json::Value &root) noexcept
+SendResponse(FCGX_Stream *out, const nlohmann::json &root) noexcept
 {
 	FCGX_PutS("Content-Type: application/json\n"
 		  "\n",
 		  out);
 
-	Json::FastWriter fw;
-	FCGX_PutS(fw.write(root).c_str(), out);
+	auto json_str = root.dump();
+	FCGX_PutS(json_str.c_str(), out);
 }

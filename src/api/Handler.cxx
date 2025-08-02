@@ -7,7 +7,9 @@
 #include "pg/Connection.hxx"
 #include "util/StringCompare.hxx"
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
+
+using std::string_view_literals::operator""sv;
 
 static void
 HandleList(Pg::Connection &db, FCGX_Stream *out)
@@ -17,13 +19,13 @@ HandleList(Pg::Connection &db, FCGX_Stream *out)
 				       " FROM fixes"
 				       " WHERE time > now() at time zone 'UTC' - '4 hours'::interval"
 				       " GROUP BY key");
-	Json::Value root(Json::arrayValue);
+	nlohmann::json root = nlohmann::json::array();
 
 	for (const auto &row : result) {
-		Json::Value item(Json::objectValue);
-		item["id"] = row.GetValue(0);
-		item["time"] = row.GetValue(1);
-		root.append(std::move(item));
+		root.emplace_back(nlohmann::json{
+			{"id"sv, row.GetValueView(0)},
+			{"time"sv, row.GetValueView(1)}
+		});
 	}
 
 	SendResponse(out, root);

@@ -94,7 +94,7 @@ libsystemd = dependency('libsystemd', required: get_option('systemd'))
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 
 libfcgi = compiler.find_library('fcgi')
-libjsoncpp = dependency('jsoncpp')
+nlohmann_json = dependency('nlohmann_json')
 
 configure_file(output: 'config.h', configuration: conf)
 
@@ -140,7 +140,7 @@ executable('beacon-api',
   dependencies: [
     util_dep,
     libfcgi,
-    libjsoncpp,
+    nlohmann_json,
     pg_dep,
     libsystemd,
   ],
