@@ -8,7 +8,6 @@ Build-Depends: debhelper (>= 12~),
  libfcgi-dev,
  libfmt-dev (>= 7),
  nlohmann-json3-dev,
- libboost-dev (>= 1.67),
  libsystemd-dev
 Standards-Version: 4.0.0
 Vcs-Browser: https://github.com/MaxKellermann/beacon
