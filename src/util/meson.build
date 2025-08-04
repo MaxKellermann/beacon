@@ -3,6 +3,7 @@ util = static_library(
   'CRC.cxx',
   'Exception.cxx',
   'PrintException.cxx',
+  'StringStrip.cxx',
   'UriQueryParser.cxx',
   include_directories: inc,
 )
