@@ -18,6 +18,13 @@ public class BeaconClient implements Closeable {
     private final SocketAddress serverAddress;
     private final DatagramSocket socket;
 
+    /**
+     * Construct a new #BeaconClient.
+     *
+     * @param _serverAddress the address of the Beacon receiver
+     * @param _key the client key used to identify to the Beacon receiver
+     * @throws SocketException on networking error
+     */
     public BeaconClient(SocketAddress _serverAddress, long _key) throws SocketException {
         key = _key;
         serverAddress = _serverAddress;
@@ -71,6 +78,13 @@ public class BeaconClient implements Closeable {
         return makeFixPacket(key, latitude, longitude, serverAddress);
     }
 
+    /**
+     * Send a datagram with a GPS fix to the receiver
+     *
+     * @param latitude the latitude of the GPS fix in degrees
+     * @param longitude the longitude of the GPS fix in degrees
+     * @throws IOException on I/O or network error
+     */
     public void sendFix(double latitude, double longitude) throws IOException {
         socket.send(makeFixPacket(latitude, longitude));
     }
