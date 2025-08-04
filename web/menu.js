@@ -18,10 +18,14 @@ function updateTrackList(control) {
   get('/api/list', function(data) {
     list = JSON.parse(data)
 
+    let prevId = control.options[control.selectedIndex].value
+
     control.innerHTML = '<option value="">none</option>'
     for (let i = 0; i < list.length; ++i) {
       let e = document.createElement("option");
       e.setAttribute("value", list[i]['id'])
+      if (list[i]['id'] === prevId)
+	e.setAttribute("selected", "")
       e.innerText = list[i]['id'];
       control.appendChild(e);
     }
