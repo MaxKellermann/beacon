@@ -1,7 +1,7 @@
 project('beacon', 'cpp', version: '0.1',
-  meson_version: '>= 0.56',
+  meson_version: '>= 1.2',
   default_options: [
-    'cpp_std=c++20',
+    'cpp_std=c++23',
     'warning_level=3',
 
     # This is only here to build subprojects as static libraries
