@@ -8,4 +8,9 @@ jar(
   'beacon/BigEndian.java',
   'beacon/CRC16CCITT.java',
   'beacon/Protocol.java',
+
+  java_args: [
+    # suppress warnings for missing JavaDoc on private/package members
+    '-Xdoclint:-missing/private,-missing/package',
+  ],
 )
