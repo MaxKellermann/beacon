@@ -61,7 +61,7 @@ private:
 	bool OnUdpDatagram(std::span<const std::byte> payload,
 			   std::span<UniqueFileDescriptor> fds,
 			   SocketAddress address, int uid) final;
-	void OnUdpError(std::exception_ptr error) noexcept final;
+	void OnUdpError(std::exception_ptr &&error) noexcept final;
 };
 
 } /* namespace Beacon */

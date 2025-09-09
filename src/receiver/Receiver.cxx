@@ -107,7 +107,7 @@ Receiver::OnUdpDatagram(std::span<const std::byte> payload,
 }
 
 void
-Receiver::OnUdpError(std::exception_ptr error) noexcept
+Receiver::OnUdpError(std::exception_ptr &&error) noexcept
 {
 	socket.Close();
 	OnError(std::move(error));
