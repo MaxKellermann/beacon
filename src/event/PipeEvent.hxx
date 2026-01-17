@@ -84,4 +84,16 @@ public:
 	void ScheduleImplicit() noexcept {
 		event.ScheduleImplicit();
 	}
+
+	void ScheduleAnyHangup() noexcept {
+		event.ScheduleAnyHangup();
+	}
+
+	bool IsReadPending() const noexcept {
+		return event.IsReadPending();
+	}
+
+	bool IsWritePending() const noexcept {
+		return event.IsWritePending();
+	}
 };
