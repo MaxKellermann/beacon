@@ -2,4 +2,4 @@
 /.wraplock
 
 /fmt-*/
-/jsoncpp-*/
+/nlohmann_json-*/
