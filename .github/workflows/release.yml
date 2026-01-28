@@ -14,24 +14,21 @@ on:
 
 permissions:
   contents: write # to create releases
+  actions: write # to trigger workflows
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
   release:
+    needs: build
     runs-on: ubuntu-24.04
     steps:
-      - name: Trigger build workflow and wait
-        uses: aurelien-baudet/workflow-dispatch@v2
-        with:
-          workflow: build.yml
-          ref: ${{ github.ref }}
-          wait-for-completion: true
-
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: JavaClientLibrary
           path: ./artifacts
-          run-id: ${{ github.run_id }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
