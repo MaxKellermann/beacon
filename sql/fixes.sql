@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS fixes (
 
         key bigint NOT NULL,
 
-        time timestamp NOT NULL DEFAULT now() at time zone 'UTC',
+        time timestamp NOT NULL DEFAULT (now() AT TIME ZONE 'UTC'),
 
         client_address inet NULL,
 
