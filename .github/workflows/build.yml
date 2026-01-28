@@ -1,6 +1,7 @@
 ---
 on:
   workflow_dispatch:
+  workflow_call: # Allow this workflow to be called by release.yml
   push:
     paths-ignore:
       - 'debian/**'
