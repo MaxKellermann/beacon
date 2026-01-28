@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 12~),
  meson (>= 1.2),
  g++ (>= 4:14),
  libfcgi-dev,
- libfmt-dev (>= 10),
+ libfmt-dev (>= 9),
  nlohmann-json3-dev,
  libsystemd-dev
 Standards-Version: 4.0.0
