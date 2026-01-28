@@ -118,6 +118,7 @@ executable('beacon-receiver',
   'src/receiver/Main.cxx',
   'src/receiver/Receiver.cxx',
   'src/receiver/Assemble.cxx',
+  'src/receiver/Database.cxx',
   include_directories: inc,
   dependencies: [
     util_dep,

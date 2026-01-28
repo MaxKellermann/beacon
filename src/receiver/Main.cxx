@@ -3,12 +3,12 @@
 
 #include "Protocol.hxx"
 #include "Receiver.hxx"
+#include "Database.hxx"
 #include "geo/GeoPoint.hxx"
 #include "pg/Connection.hxx"
 #include "lib/fmt/ExceptionFormatter.hxx"
 #include "event/Loop.hxx"
 #include "net/IPv4Address.hxx"
-#include "net/FormatAddress.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 
@@ -16,7 +16,7 @@
 #include <systemd/sd-daemon.h>
 #endif
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 #include <forward_list>
 #include <sstream>
@@ -43,7 +43,7 @@ public:
 class Instance {
 	EventLoop event_loop;
 
-	Pg::Connection db;
+	Beacon::ReceiverDatabase db;
 
 	std::forward_list<MyReceiver> receivers;
 
@@ -81,40 +81,9 @@ MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 
 	auto &db = instance.GetDatabase();
 
-	const fmt::format_int key_buffer{client.key};
-	const char *key_s = key_buffer.c_str();
-
-	char location_buffer[128];
-	const char *location_s = nullptr;
-	if (location.IsValid()) {
-		snprintf(location_buffer, sizeof(location_buffer), "POINT(%f %f)",
-			 location.longitude.Degrees(),
-			 location.latitude.Degrees());
-		location_s = location_buffer;
-	}
-
-	if (db.GetStatus() == CONNECTION_BAD) {
-		fprintf(stderr, "Reconnecting to database\n");
-
-		try {
-			db.Reconnect();
-		} catch (...) {
-			fmt::print(stderr, "Failed to reconnect to database: {}\n",
-				   std::current_exception());
-			return;
-		}
-	}
-
-	char address_buffer[256];
-	const char *address = "?";
-	if (HostToString(address_buffer, client.address))
-		address = address_buffer;
-
 	try {
-		db.ExecuteParams("INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))",
-				 key_s,
-				 address,
-				 location_s);
+		db.AutoReconnect();
+		db.InsertFix(client.address, client.key, location);
 	} catch (...) {
 		fmt::print(stderr, "Failed to insert fix into database: {}\n",
 			   std::current_exception());
