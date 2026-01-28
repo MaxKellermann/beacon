@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Max Kellermann <max.kellermann@gmail.com>
 Build-Depends: debhelper (>= 12~),
  meson (>= 1.2),
+ default-jdk,
  g++ (>= 4:14),
  libfcgi-dev,
  libfmt-dev (>= 9),
@@ -32,3 +33,14 @@ Description: Beacon API (FastCGI)
  It was designed to locate friends during bike rides.
  .
  This package contains the API as a FastCGI application.
+
+Package: libbeacon-client-java
+Section: java
+Architecture: all
+Depends: ${misc:Depends}
+Description: Java client library for Beacon protocol
+ Beacon is a light-weight UDP-based protocol for sharing GPS fixes.
+ It was designed to locate friends during bike rides.
+ .
+ This package contains the Java client library for connecting to Beacon
+ servers and sending/receiving GPS location data.

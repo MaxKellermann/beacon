@@ -13,4 +13,7 @@ jar(
     # suppress warnings for missing JavaDoc on private/package members
     '-Xdoclint:-missing/private,-missing/package',
   ],
+
+  install: true,
+  install_dir: get_option('datadir') / 'java',
 )
