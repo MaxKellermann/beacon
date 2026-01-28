@@ -86,3 +86,10 @@ jobs:
 
       - name: Unit Tests
         run: meson test -C output --print-errorlogs
+
+      - name: Upload JAR as artifact
+        if: matrix.key == 'gcc14'  # Only upload from one matrix job
+        uses: actions/upload-artifact@v4
+        with:
+          name: JavaClientLibrary
+          path: output/java/BeaconClient.jar
