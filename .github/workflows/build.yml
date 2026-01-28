@@ -90,7 +90,7 @@ jobs:
 
       - name: Upload JAR as artifact
         if: matrix.key == 'gcc14'  # Only upload from one matrix job
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: JavaClientLibrary
           path: output/java/BeaconClient.jar
