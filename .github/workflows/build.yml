@@ -63,6 +63,7 @@ jobs:
             ccache \
             libfcgi-dev \
             libfmt-dev \
+            libpq-dev \
             nlohmann-json3-dev \
             libsystemd-dev
 
