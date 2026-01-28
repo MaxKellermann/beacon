@@ -1,0 +1,87 @@
+---
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'debian/**'
+      - 'sql/**'
+      - 'subprojects/**'
+      - 'systemd/**'
+      - 'web/**'
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - 'debian/**'
+      - 'sql/**'
+      - 'subprojects/**'
+      - 'systemd/**'
+      - 'web/**'
+    branches:
+      - master
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        key: [gcc14, clang]
+        include:
+          - key: gcc14
+            os: ubuntu-24.04
+            cc: gcc-14
+            cxx: g++-14
+            packages: g++-14
+            meson_options:
+          - key: clang
+            os: ubuntu-24.04
+            cc: clang-19
+            cxx: clang++-19
+            packages: clang-19
+            meson_options: --force-fallback-for=fmt,nlohmann_json
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      CC: ccache ${{ matrix.cc }}
+      CXX: ccache ${{ matrix.cxx }}
+
+    steps:
+      - id: checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ${{ matrix.packages }} \
+            meson \
+            ccache \
+            libfcgi-dev \
+            libfmt-dev \
+            nlohmann-json3-dev \
+            libsystemd-dev
+
+      - id: cache-ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ matrix.os }}-${{ matrix.key }}
+
+      - name: Configure
+        run: |
+          meson setup \
+            -Dsystemd=enabled \
+            -Djavaclient=enabled \
+            --wrap-mode nofallback \
+            ${{ matrix.meson_options }} \
+            output
+
+      - name: Build
+        run: meson compile -C output --verbose
+
+      - name: Unit Tests
+        run: meson test -C output --print-errorlogs
