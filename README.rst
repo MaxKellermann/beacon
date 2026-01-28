@@ -19,7 +19,7 @@ You need:
 - `PostgreSQL <https://www.postgresql.org/>`__ and `PostGIS <https://postgis.net/>`__
 - `libfcgi <https://github.com/FastCGI-Archives>`__
 - `libfmt <https://fmt.dev/>`__
-- `jsoncpp <https://github.com/open-source-parsers/jsoncpp>`__
+- `nlohmann_json <https://json.nlohmann.me/>`__
 - `Meson 1.2 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
 
 Optional:
