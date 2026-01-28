@@ -3,10 +3,10 @@ Section: net
 Priority: optional
 Maintainer: Max Kellermann <max.kellermann@gmail.com>
 Build-Depends: debhelper (>= 12~),
- meson (>= 0.56),
- g++ (>= 4:10),
+ meson (>= 1.2),
+ g++ (>= 4:14),
  libfcgi-dev,
- libfmt-dev (>= 9),
+ libfmt-dev (>= 10),
  nlohmann-json3-dev,
  libsystemd-dev
 Standards-Version: 4.0.0
