@@ -1,6 +1,6 @@
 beacon (0.2) unstable; urgency=low
 
-  * 
+  * debian: allow building with default-jdk-headless instead of the full default-jdk
 
  --   
 

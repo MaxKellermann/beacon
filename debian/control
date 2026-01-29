@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Max Kellermann <max.kellermann@gmail.com>
 Build-Depends: debhelper (>= 12~),
  meson (>= 1.2),
- default-jdk,
+ default-jdk-headless,
  g++ (>= 4:14),
  libfcgi-dev,
  libfmt-dev (>= 9),
