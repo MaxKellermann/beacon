@@ -3,12 +3,11 @@
 
 #include "Database.hxx"
 #include "geo/GeoPoint.hxx"
+#include "lib/fmt/Unsafe.hxx"
 #include "net/FormatAddress.hxx"
 #include "net/SocketAddress.hxx"
 
 #include <fmt/format.h>
-
-#include <cstdio>
 
 namespace Beacon {
 
@@ -22,7 +21,7 @@ void
 ReceiverDatabase::AutoReconnect()
 {
 	if (db.GetStatus() == CONNECTION_BAD) {
-		fprintf(stderr, "Reconnecting to database\n");
+		fmt::print(stderr, "Reconnecting to database\n");
 		db.Reconnect();
 		Prepare();
 	}
@@ -36,12 +35,10 @@ ReceiverDatabase::InsertFix(SocketAddress _address, uint_least64_t key, GeoPoint
 
 	char location_buffer[128];
 	const char *location_s = nullptr;
-	if (location.IsValid()) {
-		snprintf(location_buffer, sizeof(location_buffer), "POINT(%f %f)",
-			 location.longitude.Degrees(),
-			 location.latitude.Degrees());
-		location_s = location_buffer;
-	}
+	if (location.IsValid())
+		location_s = FmtUnsafeC(location_buffer, "POINT({} {})",
+					location.longitude.Degrees(),
+					location.latitude.Degrees());
 
 	char address_buffer[256];
 	const char *address = nullptr;
