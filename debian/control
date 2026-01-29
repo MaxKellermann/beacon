@@ -17,7 +17,7 @@ Vcs-Git: git://github.com/MaxKellermann/beacon
 
 Package: beacon-receiver
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, systemd-sysv, adduser
+Depends: ${misc:Depends}, ${shlibs:Depends}, systemd-sysv
 Suggests: postgresql, postgresql-postgis, postgresql-postgis-scripts
 Description: Beacon receiver daemon
  Beacon is a light-weight UDP-based protocol for sharing GPS fixes.
@@ -27,7 +27,7 @@ Description: Beacon receiver daemon
 
 Package: beacon-api
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, systemd-sysv, adduser, spawn-fcgi
+Depends: ${misc:Depends}, ${shlibs:Depends}, systemd-sysv, spawn-fcgi
 Description: Beacon API (FastCGI)
  Beacon is a light-weight UDP-based protocol for sharing GPS fixes.
  It was designed to locate friends during bike rides.
