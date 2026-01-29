@@ -12,12 +12,19 @@
 
 namespace Beacon {
 
+ReceiverDatabase::ReceiverDatabase(const char *conninfo)
+	:db(conninfo)
+{
+	Prepare();
+}
+
 void
 ReceiverDatabase::AutoReconnect()
 {
 	if (db.GetStatus() == CONNECTION_BAD) {
 		fprintf(stderr, "Reconnecting to database\n");
 		db.Reconnect();
+		Prepare();
 	}
 }
 
@@ -41,10 +48,13 @@ ReceiverDatabase::InsertFix(SocketAddress _address, uint_least64_t key, GeoPoint
 	if (HostToString(address_buffer, _address))
 		address = address_buffer;
 
-	db.ExecuteParams("INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))",
-			 key_s,
-			 address,
-			 location_s);
+	db.ExecutePrepared("insert_fix", key_s, address, location_s);
+}
+
+void
+ReceiverDatabase::Prepare()
+{
+	db.Prepare("insert_fix", "INSERT INTO fixes(key, client_address, location) VALUES($1, $2, ST_GeomFromText($3, 4326))", 3);
 }
 
 } /* namespace Beacon */

@@ -17,12 +17,14 @@ class ReceiverDatabase {
 
 public:
 	[[nodiscard]]
-	explicit ReceiverDatabase(const char *conninfo)
-		:db(conninfo) {}
+	explicit ReceiverDatabase(const char *conninfo);
 
 	void AutoReconnect();
 
 	void InsertFix(SocketAddress address, uint_least64_t key, GeoPoint location);
+
+private:
+	void Prepare();
 };
 
 } /* namespace Beacon */
