@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Copyright Max Kellermann <max.kellermann@gmail.com>
 
+#include "Database.hxx"
 #include "Handler.hxx"
-#include "pg/Connection.hxx"
 #include "util/PrintException.hxx"
 #include "config.h"
 
@@ -35,7 +35,7 @@ try {
 #endif
 
 	const char *_db = "dbname=beacon"; // TODO make configurable
-	Pg::Connection db(_db);
+	Beacon::ApiDatabase db{_db};
 
 	FCGX_Init();
 	FCGX_Request request;

@@ -5,9 +5,9 @@
 
 #include <fcgiapp.h>
 
-namespace Pg { class Connection; }
+namespace Beacon { class ApiDatabase; }
 
 void
-HandleRequest(Pg::Connection &db,
+HandleRequest(Beacon::ApiDatabase &db,
 	      FCGX_Stream *in, FCGX_Stream *out, FCGX_Stream *err,
 	      FCGX_ParamArray envp) noexcept;

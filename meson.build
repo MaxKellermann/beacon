@@ -134,6 +134,7 @@ executable('beacon-receiver',
 
 executable('beacon-api',
   'src/api/Main.cxx',
+  'src/api/Database.cxx',
   'src/api/Handler.cxx',
   'src/api/GetGPX.cxx',
   'src/api/Response.cxx',

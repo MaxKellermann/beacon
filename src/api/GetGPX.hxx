@@ -5,9 +5,9 @@
 
 #include <fcgiapp.h>
 
-namespace Pg { class Connection; }
+namespace Beacon { class ApiDatabase; }
 
 void
-HandleGPX(Pg::Connection &db,
+HandleGPX(Beacon::ApiDatabase &db,
 	  const char *path_info,
 	  FCGX_Stream *out, FCGX_ParamArray envp) noexcept;

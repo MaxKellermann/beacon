@@ -3,7 +3,7 @@
 
 #include "GetGPX.hxx"
 #include "Response.hxx"
-#include "pg/Connection.hxx"
+#include "Database.hxx"
 #include "util/StringCompare.hxx"
 #include "util/UriQueryParser.hxx"
 
@@ -27,29 +27,16 @@ GetQueryParameter(FCGX_ParamArray envp, std::string_view name) noexcept
 }
 
 static auto
-SelectFixes(Pg::Connection &db, const uint64_t key, const std::string &since)
+SelectFixes(Beacon::ApiDatabase &db, const uint64_t key, const std::string &since)
 {
 	if (!since.empty())
-		return db.ExecuteParams(false,
-					"SELECT ST_X(location),ST_Y(location),"
-					"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
-					" FROM fixes"
-					" WHERE key=$1 AND time>=$2"
-					" AND time > now() at time zone 'UTC' - '4 hours'::interval"
-					" ORDER BY time LIMIT 16384",
-					key, since.c_str());
-	return db.ExecuteParams(false,
-				"SELECT ST_X(location),ST_Y(location),"
-				"to_char(time, 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')"
-				" FROM fixes"
-				" WHERE key=$1"
-				" AND time > now() at time zone 'UTC' - '4 hours'::interval"
-				" ORDER BY time LIMIT 16384",
-				key);
+		return db.SelectFixesSince(key, since.c_str());
+
+	return db.SelectFixes(key);
 }
 
 void
-HandleGPX(Pg::Connection &db,
+HandleGPX(Beacon::ApiDatabase &db,
 	  const char *path_info,
 	  FCGX_Stream *out, FCGX_ParamArray envp) noexcept
 {

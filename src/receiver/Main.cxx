@@ -5,7 +5,6 @@
 #include "Receiver.hxx"
 #include "Database.hxx"
 #include "geo/GeoPoint.hxx"
-#include "pg/Connection.hxx"
 #include "lib/fmt/ExceptionFormatter.hxx"
 #include "event/Loop.hxx"
 #include "net/IPv4Address.hxx"
