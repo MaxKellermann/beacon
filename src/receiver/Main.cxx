@@ -74,16 +74,13 @@ MyReceiver::MyReceiver(Instance &_instance,
 
 void
 MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
-{
+try {
 	auto &db = instance.GetDatabase();
-
-	try {
-		db.AutoReconnect();
-		db.InsertFix(client.address, client.key, location);
-	} catch (...) {
-		fmt::print(stderr, "Failed to insert fix into database: {}\n",
-			   std::current_exception());
-	}
+	db.AutoReconnect();
+	db.InsertFix(client.address, client.key, location);
+} catch (...) {
+	fmt::print(stderr, "Failed to insert fix into database: {}\n",
+		   std::current_exception());
 }
 
 void
