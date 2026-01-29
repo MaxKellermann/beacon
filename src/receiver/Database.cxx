@@ -37,7 +37,7 @@ ReceiverDatabase::InsertFix(SocketAddress _address, uint_least64_t key, GeoPoint
 	}
 
 	char address_buffer[256];
-	const char *address = "?";
+	const char *address = nullptr;
 	if (HostToString(address_buffer, _address))
 		address = address_buffer;
 
