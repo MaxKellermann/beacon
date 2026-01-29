@@ -75,9 +75,6 @@ MyReceiver::MyReceiver(Instance &_instance,
 void
 MyReceiver::OnFix(const Client &client, GeoPoint location) noexcept
 {
-	fmt::print(stderr, "fix {} {}\n",
-		   location.latitude.Degrees(), location.longitude.Degrees());
-
 	auto &db = instance.GetDatabase();
 
 	try {

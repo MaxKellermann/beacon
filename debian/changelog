@@ -1,5 +1,6 @@
 beacon (0.2) unstable; urgency=low
 
+  * receiver: don't log all fixes on stderr
   * debian: allow building with default-jdk-headless instead of the full default-jdk
   * debian: create users with systemd-sysusers instead of adduser
 
